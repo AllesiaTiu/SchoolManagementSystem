@@ -16,8 +16,14 @@ public class SchoolManagementProject {
         frame.setLayout(null);
         frame.setResizable(false);
         frame.setVisible(true);
+        
+        System.out.println("Hello");
+        
+
        
         
         
     }
+    
+    
 }
