@@ -65,7 +65,7 @@ public class StudentBranch extends JFrame implements ActionListener {
             this.dispose();                      // Close current window
         } 
         else if (e.getSource() == btnNavGrades) {
-            new GradeBranch().setVisible(true);  // Open Grade window
+            new GradesBranch().setVisible(true);  // Open Grade window
             this.dispose();                      // Close current window
         } 
         else if (e.getSource() == btnNavReports) {
