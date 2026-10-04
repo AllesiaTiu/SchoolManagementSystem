@@ -17,7 +17,7 @@ public class SchoolManagementProject {
         frame.setResizable(false);
         frame.setVisible(true);
         
-        System.out.println("Hello");
+        System.out.println("Whatsup");
         
 
        
