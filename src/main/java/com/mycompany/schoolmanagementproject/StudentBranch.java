@@ -12,7 +12,7 @@ public class StudentBranch extends JFrame {
     
     StudentBranch(){
         
-        System.out.print("Hi");
+        System.out.print("Heyyy");
     }
     
     
