@@ -10,15 +10,8 @@ public class SchoolManagementProject {
         
         
         
-        JFrame frame = new JFrame();
-        frame.setSize(600, 600);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(null);
-        frame.setResizable(false);
-        frame.setVisible(true);
-        
-        System.out.println("Hi");
-        
+       CourseBranch c = new CourseBranch();
+       c.setVisible(true);
 
        
         
