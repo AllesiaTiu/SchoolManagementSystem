@@ -11,6 +11,7 @@ public class CourseBranch extends JFrame{
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
+        System.out.println("Hello");
     }
     
 }
