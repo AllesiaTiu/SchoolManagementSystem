@@ -9,9 +9,9 @@ public class SchoolManagementProject {
     public static void main(String[] args) {
         
         
-       StudentBranch studentBranch = new StudentBranch();
-       studentBranch.setVisible(true);
         
+       CourseBranch c = new CourseBranch();
+       c.setVisible(true);
 
        
         
