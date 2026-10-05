@@ -240,27 +240,71 @@ public class StudentBranch extends JFrame implements ActionListener {
                          
                          
                 }
+                
+                
            
         }
-        
-    }
-    public int countCourses(){
-        
-        int overall = 0;
-        
-        for(int i = 0; i< courseCheckBox.size(); i++){
-            
-            if(courseCheckBox.get(i).isSelected()){
-                courseCount++;
-                
-               
+        if(e.getSource() == sortBtn){
+            for(int i = 0; i < tableModel.getRowCount(); i++){
+                for(int j = 0; j < tableModel.getColumnCount(); j++){
+                    
+                    tableModel.setValueAt(bubbleSort(studentList), i, j);
+                    
+                    
+                }
             }
             
             
         }
         
+        if(e.getSource() == searchBtn){
+            
+            
+            
+        }
         
+        
+    }
+    public int countCourses(){
+          for(int i = 0; i< courseCheckBox.size(); i++){
+            
+            if(courseCheckBox.get(i).isSelected()){
+                courseCount++;
+          
+            }
+        }
         return courseCount;
+    }
+    public void binarySearch(ArrayList<Student> studentList, String searchInput){
+        
+        
+        
+        
+    }
+    public ArrayList<Student> bubbleSort(ArrayList<Student> studentList){
+        
+        
+        
+        for(int i = 0; i < studentList.size()- 1; i++){
+            for(int j = i + 1; j < studentList.size() - 1; j++){
+                
+                if(studentList.get(i).getName().compareTo(studentList.get(j).getName()) > 0){
+                    
+                    String container = studentList.get(i).getName();
+                    studentList.get(i).setName(studentList.get(j).getName());
+                    studentList.get(j).setName(container);
+                    
+                }
+                
+                
+            }
+            
+            
+            
+        }
+        
+        return studentList;
+        
     }
     
     
