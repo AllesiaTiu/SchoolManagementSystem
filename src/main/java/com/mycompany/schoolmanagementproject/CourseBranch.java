@@ -12,6 +12,7 @@ public class CourseBranch extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         System.out.println("Hello");
+        System.out.println("Hi");
     }
     
 }
