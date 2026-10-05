@@ -17,6 +17,10 @@ public class Student {
     public String getID(){
         return id;
     }
+    public void setName(String name){
+        this.name = name;
+        
+    }
     
     
     
