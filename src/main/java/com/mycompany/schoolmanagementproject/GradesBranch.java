@@ -17,6 +17,7 @@ public class GradesBranch extends JFrame implements ActionListener{
     JButton addBtn;
     JButton updBtn;
     JButton deleteBtn;
+    JButton computeAve;
     JButton searchBtn;
     JButton sortBtn;
     
@@ -102,6 +103,9 @@ public class GradesBranch extends JFrame implements ActionListener{
         
         deleteBtn = new JButton("Delete");
         deleteBtn.setBounds(270, 130, 100, 40);
+        
+        computeAve = new JButton("Average");
+        computeAve.setBounds(380, 130, 100, 40);
        
        
         panelTitle = new JPanel();
@@ -124,6 +128,7 @@ public class GradesBranch extends JFrame implements ActionListener{
         panelInputs.add(addBtn);
         panelInputs.add(updBtn);
         panelInputs.add(deleteBtn);
+        panelInputs.add(computeAve);
         add(panelInputs);
         
         
@@ -138,12 +143,17 @@ public class GradesBranch extends JFrame implements ActionListener{
         add(listTitle);
         
         tableModel = new DefaultTableModel();
-        tableModel.addColumn("Student ID");
-        tableModel.addColumn("Course ID");
-        tableModel.addColumn("Score");
+        tableModel.addColumn("Name");
+        tableModel.addColumn("Programmming 3");
+        tableModel.addColumn("Data Structures");
+        tableModel.addColumn("PathFit");
+        tableModel.addColumn("RVA");
+        tableModel.addColumn("DCAN");
+        tableModel.addColumn("Operating System");
+        tableModel.addColumn("GWA");
         table = new JTable(tableModel);
         scrollPane = new JScrollPane(table);
-        scrollPane.setBounds(180, 280, 600, 200);
+        scrollPane.setBounds(180, 280, 800, 200);
         add(scrollPane);
         
         grades.addActionListener(this);
