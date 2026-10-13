@@ -11,9 +11,10 @@ public class SchoolManagementProject {
         
        
        
+       AttendanceBranch b = new AttendanceBranch();
+       b.setVisible(true);
        
-       StudentBranch s = new StudentBranch();
-       s.setVisible(true);
+       
 
        
         
