@@ -95,12 +95,11 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         updBtn = new JButton("Update");
         updBtn.setBounds(140, 190, 100, 40);
+        updBtn.addActionListener(this); // Registered Update button
         
         delBtn = new JButton("Delete");
         delBtn.setBounds(250, 190, 100, 40);
-        
-        srchBtn = new JButton("Search");
-        srchBtn.setBounds(360, 190, 100, 40);
+        delBtn.addActionListener(this); // Registered Delete button
         
         panelInputs = new JPanel();
         panelInputs.setBackground(Color.LIGHT_GRAY);
@@ -116,7 +115,6 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelInputs.add(addBtn);
         panelInputs.add(updBtn);
         panelInputs.add(delBtn);
-        panelInputs.add(srchBtn);
         
         add(panelInputs);
         
@@ -191,6 +189,80 @@ public class CourseBranch extends JFrame implements ActionListener {
             cID_txt.requestFocus();
             
             JOptionPane.showMessageDialog(this, "Course added successfully!");
+        } 
+        else if (e.getSource() == updBtn) {
+            int selectedRow = table.getSelectedRow();
+            
+            // Check if a course is selected from the table
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, 
+                        "Please select a course to update.", 
+                        "Selection Error", 
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            String id = cID_txt.getText().trim();
+            String name = cNM_txt.getText().trim();
+            
+            // Check if inputs are empty
+            if (id.isEmpty() || name.isEmpty()) {
+                JOptionPane.showMessageDialog(this, 
+                        "Please fill in both Course ID and Course Name.", 
+                        "Input Error", 
+                        JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            // Check for duplicate ID on other rows
+            for (int i = 0; i < tblM.getRowCount(); i++) {
+                if (i != selectedRow && tblM.getValueAt(i, 0).toString().equalsIgnoreCase(id)) {
+                    JOptionPane.showMessageDialog(this, 
+                            "Another course with this ID already exists.", 
+                            "Duplicate ID", 
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+            }
+            
+            // Update the selected row with new values
+            tblM.setValueAt(id, selectedRow, 0);
+            tblM.setValueAt(name, selectedRow, 1);
+            
+            // Clear fields
+            cID_txt.setText("");
+            cNM_txt.setText("");
+            
+            JOptionPane.showMessageDialog(this, "Course updated successfully!");
+        }
+        else if (e.getSource() == delBtn) {
+            int selectedRow = table.getSelectedRow();
+            
+            // Check if a course is selected from the table
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, 
+                        "Please select a course to delete.", 
+                        "Selection Error", 
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            
+            // Confirmation prompt
+            int confirm = JOptionPane.showConfirmDialog(this, 
+                    "Are you sure you want to delete this course?", 
+                    "Confirm Deletion", 
+                    JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                // Remove row from the table model
+                tblM.removeRow(selectedRow);
+                
+                // Clear fields
+                cID_txt.setText("");
+                cNM_txt.setText("");
+                
+                JOptionPane.showMessageDialog(this, "Course deleted successfully!");
+            }
         }
     }
 }
