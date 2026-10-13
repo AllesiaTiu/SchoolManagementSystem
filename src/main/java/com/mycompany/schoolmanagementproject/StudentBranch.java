@@ -202,10 +202,13 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
         
-        
+        students.addActionListener(this);
+        courses.addActionListener(this);
+        grades.addActionListener(this);
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
+        sortBtn.addActionListener(this);
      
     }
 
@@ -232,35 +235,91 @@ public class StudentBranch extends JFrame implements ActionListener {
                      Student student = new Student(nameText, idText);
                          studentList.add(student);
                          
-                         tableModel.addRow(new Object[]{
-                         student.getName(),
-                         student.getID(), countCourses()
+                         tableModel.addRow(new Object[]{ 
+                             student.getID(),
+                            student.getName(),
+                             countCourses()
                     
                            });
                          
                          
                 }
+                
+                
            
         }
+        if(e.getSource() == sortBtn){
+           
+            bubbleSort(studentList);
+            refreshTable();
+        }
+        
+        if(e.getSource() == searchBtn){
+            
+            
+            
+        }
+        if(e.getSource() == courses){
+            CourseBranch c = new CourseBranch();
+             c.setVisible(true);
+        }
+        if(e.getSource() == grades){
+            GradesBranch g = new GradesBranch();
+            g.setVisible(true);
+        
+        }
+        if(e.getSource() == students){
+             StudentBranch s = new StudentBranch();
+              s.setVisible(true);
+        }
+        
         
     }
     public int countCourses(){
-        
-        int overall = 0;
-        
-        for(int i = 0; i< courseCheckBox.size(); i++){
+          for(int i = 0; i< courseCheckBox.size(); i++){
             
             if(courseCheckBox.get(i).isSelected()){
                 courseCount++;
-                
-               
+          
             }
-            
-            
+        }
+        return courseCount;
+    }
+    public void binarySearch(ArrayList<Student> studentList, String searchInput){
+        
+        
+        
+        
+    }
+    public void bubbleSort(ArrayList<Student> studentList){
+        
+                       
+             for(int i = 0; i < studentList.size()- 1; i++){
+                    for(int j = 0; j < studentList.size() - i - 1; j++){
+                
+                      if(studentList.get(i).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
+                    
+                        Student temp = studentList.get(j);
+                    studentList.set(j, studentList.get(j + 1));
+                    studentList.set(j + 1, temp);
+                         
+                         
+                }
+              
+            }
+          
         }
         
+      
         
-        return courseCount;
+    }
+    public void refreshTable(){
+        tableModel.setRowCount(0);
+        
+       for(Student list:studentList){
+           tableModel.addRow(new Object[] {list.getID(), list.getName(), countCourses()});
+       }
+        
     }
     
     

@@ -152,9 +152,13 @@ public class CourseBranch extends JFrame implements ActionListener {
         scroll = new JScrollPane(table);
         scroll.setBounds(180, 290, 700, 200);
         add(scroll);
+        
+        grades.addActionListener(this);
+        students.addActionListener(this);
+        courses.addActionListener(this);
     }
     
-    // Override the ActionListener method
+   
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addBtn) {
@@ -191,6 +195,22 @@ public class CourseBranch extends JFrame implements ActionListener {
             cID_txt.requestFocus();
             
             JOptionPane.showMessageDialog(this, "Course added successfully!");
+            
+            
+            
+        }
+         if(e.getSource() == courses){
+            CourseBranch c = new CourseBranch();
+             c.setVisible(true);
+        }
+        if(e.getSource() == grades){
+            GradesBranch g = new GradesBranch();
+            g.setVisible(true);
+        
+        }
+        if(e.getSource() == students){
+             StudentBranch s = new StudentBranch();
+              s.setVisible(true);
         }
     }
 }
