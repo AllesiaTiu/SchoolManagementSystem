@@ -150,9 +150,13 @@ public class CourseBranch extends JFrame implements ActionListener {
         scroll = new JScrollPane(table);
         scroll.setBounds(180, 290, 700, 200);
         add(scroll);
+        
+        grades.addActionListener(this);
+        students.addActionListener(this);
+        courses.addActionListener(this);
     }
     
-    // Override the ActionListener method
+   
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addBtn) {
