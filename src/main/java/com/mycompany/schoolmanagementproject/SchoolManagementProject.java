@@ -3,7 +3,7 @@
  */
 
 package com.mycompany.schoolmanagementproject;
-import javax.swing.JFrame;
+
 public class SchoolManagementProject {
 
     public static void main(String[] args) {
@@ -14,12 +14,15 @@ public class SchoolManagementProject {
        AttendanceBranch b = new AttendanceBranch();
        b.setVisible(true);
        
-       
+       ReportBranch app = new ReportBranch ();
+       app.setVisible(true);
 
        
         
         
     }
+
+    
     
     
 }
