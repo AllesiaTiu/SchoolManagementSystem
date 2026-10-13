@@ -202,10 +202,13 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
         
-        
+        students.addActionListener(this);
+        courses.addActionListener(this);
+        grades.addActionListener(this);
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
+        sortBtn.addActionListener(this);
      
     }
 
@@ -232,9 +235,10 @@ public class StudentBranch extends JFrame implements ActionListener {
                      Student student = new Student(nameText, idText);
                          studentList.add(student);
                          
-                         tableModel.addRow(new Object[]{
-                         student.getName(),
-                         student.getID(), countCourses()
+                         tableModel.addRow(new Object[]{ 
+                             student.getID(),
+                            student.getName(),
+                             countCourses()
                     
                            });
                          
@@ -245,22 +249,28 @@ public class StudentBranch extends JFrame implements ActionListener {
            
         }
         if(e.getSource() == sortBtn){
-            for(int i = 0; i < tableModel.getRowCount(); i++){
-                for(int j = 0; j < tableModel.getColumnCount(); j++){
-                    
-                    tableModel.setValueAt(bubbleSort(studentList), i, j);
-                    
-                    
-                }
-            }
-            
-            
+           
+            bubbleSort(studentList);
+            refreshTable();
         }
         
         if(e.getSource() == searchBtn){
             
             
             
+        }
+        if(e.getSource() == courses){
+            CourseBranch c = new CourseBranch();
+             c.setVisible(true);
+        }
+        if(e.getSource() == grades){
+            GradesBranch g = new GradesBranch();
+            g.setVisible(true);
+        
+        }
+        if(e.getSource() == students){
+             StudentBranch s = new StudentBranch();
+              s.setVisible(true);
         }
         
         
@@ -281,29 +291,34 @@ public class StudentBranch extends JFrame implements ActionListener {
         
         
     }
-    public ArrayList<Student> bubbleSort(ArrayList<Student> studentList){
+    public void bubbleSort(ArrayList<Student> studentList){
         
-        
-        
-        for(int i = 0; i < studentList.size()- 1; i++){
-            for(int j = i + 1; j < studentList.size() - 1; j++){
+                       
+             for(int i = 0; i < studentList.size()- 1; i++){
+                    for(int j = 0; j < studentList.size() - i - 1; j++){
                 
-                if(studentList.get(i).getName().compareTo(studentList.get(j).getName()) > 0){
+                      if(studentList.get(i).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
                     
-                    String container = studentList.get(i).getName();
-                    studentList.get(i).setName(studentList.get(j).getName());
-                    studentList.get(j).setName(container);
-                    
+                        Student temp = studentList.get(j);
+                    studentList.set(j, studentList.get(j + 1));
+                    studentList.set(j + 1, temp);
+                         
+                         
                 }
-                
-                
+              
             }
-            
-            
-            
+          
         }
         
-        return studentList;
+      
+        
+    }
+    public void refreshTable(){
+        tableModel.setRowCount(0);
+        
+       for(Student list:studentList){
+           tableModel.addRow(new Object[] {list.getID(), list.getName(), countCourses()});
+       }
         
     }
     

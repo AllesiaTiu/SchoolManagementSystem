@@ -1,10 +1,12 @@
 package com.mycompany.schoolmanagementproject;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class GradesBranch extends JFrame{
+public class GradesBranch extends JFrame implements ActionListener{
     
     JButton students;
     JButton courses;
@@ -144,12 +146,26 @@ public class GradesBranch extends JFrame{
         scrollPane.setBounds(180, 280, 600, 200);
         add(scrollPane);
         
+        grades.addActionListener(this);
+        students.addActionListener(this);
+        courses.addActionListener(this);
+    
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == courses){
+            CourseBranch c = new CourseBranch();
+             c.setVisible(true);
+        }
+        if(e.getSource() == grades){
+            GradesBranch g = new GradesBranch();
+            g.setVisible(true);
         
-        
-      
-        
-        
-        
-        
+        }
+        if(e.getSource() == students){
+             StudentBranch s = new StudentBranch();
+              s.setVisible(true);
+        }
     }
 }
