@@ -13,6 +13,8 @@ public class TranscriptBranch extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         
+        System.out.println("HeLLO");
+        
         
         
     }
