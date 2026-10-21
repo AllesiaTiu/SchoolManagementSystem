@@ -8,20 +8,34 @@ import javax.swing.table.DefaultTableModel;
 
 public class CourseBranch extends JFrame implements ActionListener {
     
-    private JButton students, courses, grades, transcript, report, attendance, addBtn, updBtn, delBtn, srchBtn, sortBtn, srch2Btn;
-    private JPanel panelInputs, panelTitle, panelEnr, panelSort, pinkSort;
-    private JLabel titleCM, courseID, courseName, enrllStud, noStudenr, sortC, srchLbl;
-    private JTextField cID_txt, cNM_txt, inputCourse;
+    // Navigation Buttons
+    private JButton students, courses, grades, transcript, report, attendance;
+    
+    // Input Panel Elements
+    private JPanel panelInputs, panelTitle, panelEnr;
+    private JLabel titleCM, courseID, courseName, enrllStud, noStudenr;
+    private JTextField cID_txt, cNM_txt;
+    private JButton addBtn, updBtn, delBtn;
+    
+    // Sort & Search Panel Elements
+    private JPanel panelSort, pinkSort;
+    private JLabel sortC, srchLbl;
+    private JTextField inputCourse;
+    private JButton sortBtn, srch2Btn;
+    
+    // Table Elements
     private JTable table;
     private DefaultTableModel tblM;
     private JScrollPane scroll;
     
     public CourseBranch() {
+        // --- Frame Settings ---
         setTitle("School Management System");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         
+        // --- 1. Navigation Sidebar Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -46,30 +60,45 @@ public class CourseBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
         
+        // --- 2. Course Input Panel ---
+        panelInputs = new JPanel();
+        panelInputs.setBackground(Color.LIGHT_GRAY);
+        panelInputs.setBounds(180, 30, 600, 250);
+        panelInputs.setLayout(null);
+        
+        // Title banner inside input panel
         titleCM = new JLabel("Course Management");
         titleCM.setBounds(30, 0, 150, 30);
         
-        cID_txt = new JTextField();
-        cID_txt.setBounds(150, 35, 250, 20);
-        
-        cNM_txt = new JTextField();
-        cNM_txt.setBounds(150, 65, 250, 20);
-        
-        sortC = new JLabel("Sort Courses");
-        sortC.setBounds(30, 0, 150, 30);
-        
-        // panels
-        pinkSort = new JPanel();
-        pinkSort.setSize(200, 30);
-        pinkSort.setBackground(Color.pink);
-        pinkSort.setLayout(null);
-        pinkSort.add(sortC);
-        
         panelTitle = new JPanel();
-        panelTitle.setSize(600, 30);
+        panelTitle.setBounds(0, 0, 600, 30);
         panelTitle.setBackground(Color.pink);
         panelTitle.setLayout(null);
         panelTitle.add(titleCM);
+        panelInputs.add(panelTitle);
+        
+        // Course ID field
+        courseID = new JLabel("Course ID: ");
+        courseID.setBounds(30, 30, 100, 30);
+        panelInputs.add(courseID);
+        
+        cID_txt = new JTextField();
+        cID_txt.setBounds(150, 35, 250, 20);
+        panelInputs.add(cID_txt);
+        
+        // Course Name field
+        courseName = new JLabel("Course Name: ");
+        courseName.setBounds(30, 60, 100, 30);
+        panelInputs.add(courseName);
+        
+        cNM_txt = new JTextField();
+        cNM_txt.setBounds(150, 65, 250, 20);
+        panelInputs.add(cNM_txt);
+        
+        // Enrolled Students display
+        enrllStud = new JLabel("Enrolled Students: ");
+        enrllStud.setBounds(30, 90, 120, 30);
+        panelInputs.add(enrllStud);
         
         noStudenr = new JLabel("0 Students");
         noStudenr.setBounds(5, -5, 150, 30);
@@ -79,73 +108,69 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelEnr.setBackground(Color.white);
         panelEnr.setLayout(null);
         panelEnr.add(noStudenr);
+        panelInputs.add(panelEnr);
         
-        courseID = new JLabel("Course ID: ");
-        courseID.setBounds(30, 30, 100, 30);
-        
-        courseName = new JLabel("Course Name: ");
-        courseName.setBounds(30, 60, 100, 30);
-  
-        enrllStud = new JLabel("Enrolled Students: ");
-        enrllStud.setBounds(30, 90, 120, 30);
-        
+        // Action buttons
         addBtn = new JButton("Add");
         addBtn.setBounds(30, 190, 100, 40);
-        addBtn.addActionListener(this); // Register ActionListener
+        addBtn.addActionListener(this); 
+        panelInputs.add(addBtn);
         
         updBtn = new JButton("Update");
         updBtn.setBounds(140, 190, 100, 40);
-        updBtn.addActionListener(this); // Registered Update button
+        updBtn.addActionListener(this); 
+        panelInputs.add(updBtn);
         
         delBtn = new JButton("Delete");
         delBtn.setBounds(250, 190, 100, 40);
-        delBtn.addActionListener(this); // Registered Delete button
-        
-        panelInputs = new JPanel();
-        panelInputs.setBackground(Color.LIGHT_GRAY);
-        panelInputs.setBounds(180, 30, 600, 250);
-        panelInputs.setLayout(null);
-        panelInputs.add(courseID);
-        panelInputs.add(courseName);
-        panelInputs.add(enrllStud);
-        panelInputs.add(panelTitle);
-        panelInputs.add(cID_txt);
-        panelInputs.add(cNM_txt);
-        panelInputs.add(panelEnr);
-        panelInputs.add(addBtn);
-        panelInputs.add(updBtn);
+        delBtn.addActionListener(this); 
         panelInputs.add(delBtn);
         
         add(panelInputs);
         
-        sortBtn = new JButton("Sort by Name(A-Z)");
-        sortBtn.setBounds(20, 190, 150, 40);
-        
-        srchLbl = new JLabel("Search Course");
-        srchLbl.setBounds(30, 60, 100, 30);
-        
-        inputCourse = new JTextField();
-        inputCourse.setBounds(30, 90, 150, 20);
-        
-        srch2Btn = new JButton("Search");
-        srch2Btn.setBounds(30, 120, 100, 40);
-        
+        // --- 3. Search & Sort Panel ---
         panelSort = new JPanel();
         panelSort.setBackground(Color.LIGHT_GRAY);
         panelSort.setBounds(790, 30, 200, 250);
         panelSort.setLayout(null);
+        
+        // Title banner inside sort panel
+        sortC = new JLabel("Sort Courses");
+        sortC.setBounds(30, 0, 150, 30);
+        
+        pinkSort = new JPanel();
+        pinkSort.setBounds(0, 0, 200, 30);
+        pinkSort.setBackground(Color.pink);
+        pinkSort.setLayout(null);
+        pinkSort.add(sortC);
         panelSort.add(pinkSort);
-        panelSort.add(sortBtn);
+        
+        // Search controls
+        srchLbl = new JLabel("Search Course");
+        srchLbl.setBounds(30, 60, 100, 30);
         panelSort.add(srchLbl);
+        
+        inputCourse = new JTextField();
+        inputCourse.setBounds(30, 90, 150, 20);
         panelSort.add(inputCourse);
+        
+        srch2Btn = new JButton("Search");
+        srch2Btn.setBounds(30, 120, 100, 40);
         panelSort.add(srch2Btn);
+        
+        // Sort button
+        sortBtn = new JButton("Sort by Name(A-Z)");
+        sortBtn.setBounds(20, 190, 150, 40);
+        panelSort.add(sortBtn);
         
         add(panelSort);
         
+        // --- 4. Table Setup ---
         tblM = new DefaultTableModel();
         tblM.addColumn("Course ID");
         tblM.addColumn("Course Name");
         tblM.addColumn("Enrolled Students");
+        
         table = new JTable(tblM);
         scroll = new JScrollPane(table);
         scroll.setBounds(180, 290, 700, 200);
@@ -156,9 +181,11 @@ public class CourseBranch extends JFrame implements ActionListener {
         courses.addActionListener(this);
     }
     
-   
+    // Action Event Handling for Add, Update, and Delete
     @Override
     public void actionPerformed(ActionEvent e) {
+        
+        // --- ADD BUTTON ---
         if (e.getSource() == addBtn) {
             String id = cID_txt.getText().trim();
             String name = cNM_txt.getText().trim();
@@ -184,20 +211,20 @@ public class CourseBranch extends JFrame implements ActionListener {
                 }
             }
             
-            // Add the row to the table model
+            // Add row and clear inputs
             tblM.addRow(new Object[]{id, name, enrolled});
-            
-            // Reset input fields
             cID_txt.setText("");
             cNM_txt.setText("");
             cID_txt.requestFocus();
             
             JOptionPane.showMessageDialog(this, "Course added successfully!");
         } 
+        
+        // --- UPDATE BUTTON ---
         else if (e.getSource() == updBtn) {
             int selectedRow = table.getSelectedRow();
             
-            // Check if a course is selected from the table
+            // Check if a row is selected
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, 
                         "Please select a course to update.", 
@@ -229,20 +256,20 @@ public class CourseBranch extends JFrame implements ActionListener {
                 }
             }
             
-            // Update the selected row with new values
+            // Update selected row and clear inputs
             tblM.setValueAt(id, selectedRow, 0);
             tblM.setValueAt(name, selectedRow, 1);
-            
-            // Clear fields
             cID_txt.setText("");
             cNM_txt.setText("");
             
             JOptionPane.showMessageDialog(this, "Course updated successfully!");
         }
+        
+        // --- DELETE BUTTON ---
         else if (e.getSource() == delBtn) {
             int selectedRow = table.getSelectedRow();
             
-            // Check if a course is selected from the table
+            // Check if a row is selected
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, 
                         "Please select a course to delete.", 
@@ -258,10 +285,7 @@ public class CourseBranch extends JFrame implements ActionListener {
                     JOptionPane.YES_NO_OPTION);
             
             if (confirm == JOptionPane.YES_OPTION) {
-                // Remove row from the table model
                 tblM.removeRow(selectedRow);
-                
-                // Clear fields
                 cID_txt.setText("");
                 cNM_txt.setText("");
                 
