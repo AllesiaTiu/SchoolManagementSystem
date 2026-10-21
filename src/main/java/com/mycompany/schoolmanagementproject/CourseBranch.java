@@ -17,11 +17,14 @@ public class CourseBranch extends JFrame implements ActionListener {
     private JScrollPane scroll;
     
     public CourseBranch() {
+        // title and layout for the school system
         setTitle("School Management System");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         
+        
+        //Buttons for the site
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -46,8 +49,11 @@ public class CourseBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
         
+        //label
         titleCM = new JLabel("Course Management");
         titleCM.setBounds(30, 0, 150, 30);
+        
+        //textfield or where to type
         
         cID_txt = new JTextField();
         cID_txt.setBounds(150, 35, 250, 20);
@@ -58,7 +64,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         sortC = new JLabel("Sort Courses");
         sortC.setBounds(30, 0, 150, 30);
         
-        // panels
+        // panels for the extended function
         pinkSort = new JPanel();
         pinkSort.setSize(200, 30);
         pinkSort.setBackground(Color.pink);
@@ -71,6 +77,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelTitle.setLayout(null);
         panelTitle.add(titleCM);
         
+        //number of enrolled students
         noStudenr = new JLabel("0 Students");
         noStudenr.setBounds(5, -5, 150, 30);
         
@@ -91,15 +98,15 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         addBtn = new JButton("Add");
         addBtn.setBounds(30, 190, 100, 40);
-        addBtn.addActionListener(this); // Register ActionListener
+        addBtn.addActionListener(this); 
         
         updBtn = new JButton("Update");
         updBtn.setBounds(140, 190, 100, 40);
-        updBtn.addActionListener(this); // Registered Update button
+        updBtn.addActionListener(this); 
         
         delBtn = new JButton("Delete");
         delBtn.setBounds(250, 190, 100, 40);
-        delBtn.addActionListener(this); // Registered Delete button
+        delBtn.addActionListener(this); 
         
         panelInputs = new JPanel();
         panelInputs.setBackground(Color.LIGHT_GRAY);
