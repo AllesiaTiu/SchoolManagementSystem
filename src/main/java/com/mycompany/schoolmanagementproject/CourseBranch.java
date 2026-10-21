@@ -287,6 +287,21 @@ public class CourseBranch extends JFrame implements ActionListener {
                 
                 JOptionPane.showMessageDialog(this, "Course deleted successfully!");
             }
+            
+            if(e.getSource() == courses){
+            CourseBranch c = new CourseBranch();
+             c.setVisible(true);
+        }
+        if(e.getSource() == grades){
+            GradesBranch g = new GradesBranch();
+            g.setVisible(true);
+        
+        }
+        if(e.getSource() == students){
+             StudentBranch s = new StudentBranch();
+              s.setVisible(true);
         }
     }
+    
+  }
 }
