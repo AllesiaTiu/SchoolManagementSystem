@@ -12,8 +12,10 @@ public class SchoolManagementProject {
        
        
        
-       StudentBranch s = new StudentBranch();
-       s.setVisible(true);
+        LoginGUI login = new LoginGUI();
+        login.setVisible(true);
+        
+      
 
        
         
