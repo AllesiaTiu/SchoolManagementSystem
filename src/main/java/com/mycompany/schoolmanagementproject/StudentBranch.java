@@ -232,7 +232,7 @@ public class StudentBranch extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Error");
                 }
                 else{
-                     Student student = new Student(nameText, idText);
+                     Student student = new Student(nameText);
                          studentList.add(student);
                          
                          tableModel.addRow(new Object[]{ 
