@@ -6,7 +6,7 @@ public class LoginGUI extends JFrame{
     JLabel idlbl;
     JLabel passwordlbl;
     
-    JTextField nametxt;
+    JTextField idtxt;
     JTextField passtxt;
     
     JButton logInBtn;
@@ -17,8 +17,14 @@ public class LoginGUI extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         idlbl = new JLabel("Student ID: ");
-        idlbl.setBounds(100,50, 100, 80);
+        idlbl.setBounds(100,100, 100, 30);
         add(idlbl);
+        
+        idtxt = new JTextField();
+        idtxt.setBounds(325, 100, 250, 30);
+        add(idtxt);
+        
+        
         
         
         

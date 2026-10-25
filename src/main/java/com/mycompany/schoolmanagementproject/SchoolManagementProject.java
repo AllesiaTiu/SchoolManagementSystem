@@ -15,7 +15,7 @@ public class SchoolManagementProject {
         LoginGUI login = new LoginGUI();
         login.setVisible(true);
         
-      
+        
 
        
         
