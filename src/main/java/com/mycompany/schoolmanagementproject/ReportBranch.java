@@ -21,6 +21,7 @@ public class ReportBranch extends JFrame{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
         
+        //this is for the buttons
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -46,7 +47,7 @@ public class ReportBranch extends JFrame{
         add(attendance);
         
 
-        
+        //this is for adding columns
         JLabel reportTitle = new JLabel("Branch Student Reports");
         reportTitle.setFont(new java.awt.Font("Segoe UI", 1, 18));
         reportTitle.setBounds(200, 30, 300, 30);
