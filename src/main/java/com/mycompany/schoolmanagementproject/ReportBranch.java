@@ -14,7 +14,6 @@ public class ReportBranch extends JFrame{
     JButton report;
     JButton attendance;
    
-            
     
     ReportBranch(){
         setTitle("Student Branch");
