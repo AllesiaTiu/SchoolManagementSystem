@@ -68,8 +68,11 @@ public class ReportBranch extends JFrame{
         String[]columns = {"Student ID", "Name", "Course", "GPA", "Status"};
         Object[][] data = {
             {"2026-001", "Juan Cruz", "BSIT", "1.25", "Passed"},
-            {"2026-002", "Maria Santos", "BSCS", "1.75", "Passed"},
-            {"2026-003", "Alex Reyes", "BSIS", "2.50", "Warning"}
+            {"2026-002", "Maria Santos", "BSIT", "1.75", "Passed"},
+            {"2026-003", "Angelo Burkley", "BSIT", "2.00", "Passed"},
+            {"2026-004", "Alex Reyes", "BSIT", "2.50", "Warning"},
+            {"2026-005", "Jasmine Garcia", "BSIT", "5.00", "Dropped"},
+            {"2026-006", "Alfred Grey", "BSIT", "5.00", "Dropped"}
         };
         
         JTable reportTable = new JTable(data, columns);
