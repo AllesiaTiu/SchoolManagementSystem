@@ -61,6 +61,7 @@ public class ReportBranch extends JFrame{
         txtSearch.setBounds(310, 80, 200, 25);
         add(txtSearch);
 
+        //jbutton
         JButton btnFilter = new JButton("Filter");
         btnFilter.setBounds(520, 80, 80, 25);
         add(btnFilter);
