@@ -65,6 +65,7 @@ public class ReportBranch extends JFrame{
         btnFilter.setBounds(520, 80, 80, 25);
         add(btnFilter);
         
+        //report grades
         String[]columns = {"Student ID", "Name", "Course", "GPA", "Status"};
         Object[][] data = {
             {"2026-001", "Juan Cruz", "BSIT", "1.25", "Passed"},
