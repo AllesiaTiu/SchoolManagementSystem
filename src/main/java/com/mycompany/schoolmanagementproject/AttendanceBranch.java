@@ -1,4 +1,4 @@
-//jeanjean
+
 //Attendance Branch
 package com.mycompany.schoolmanagementproject;
 
