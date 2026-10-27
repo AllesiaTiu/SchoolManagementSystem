@@ -14,7 +14,7 @@ public class TranscriptBranch extends JFrame{
         setLayout(null);
         
         System.out.println("HeLLO");
-        
+        System.out.println("change auth");
         
         System.out.println("EMAIL CHANGE");
     }
