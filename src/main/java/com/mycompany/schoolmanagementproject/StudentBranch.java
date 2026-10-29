@@ -232,7 +232,7 @@ public class StudentBranch extends JFrame implements ActionListener {
                     JOptionPane.showMessageDialog(this, "Error");
                 }
                 else{
-                     Student student = new Student(nameText, idText);
+                     Student student = new Student(nameText);
                          studentList.add(student);
                          
                          tableModel.addRow(new Object[]{ 
@@ -300,8 +300,8 @@ public class StudentBranch extends JFrame implements ActionListener {
                       if(studentList.get(i).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
                     
                         Student temp = studentList.get(j);
-                    studentList.set(j, studentList.get(j + 1));
-                    studentList.set(j + 1, temp);
+                        studentList.set(j, studentList.get(j + 1));
+                        studentList.set(j + 1, temp);
                          
                          
                 }
