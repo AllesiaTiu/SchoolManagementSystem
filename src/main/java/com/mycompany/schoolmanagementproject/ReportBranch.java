@@ -86,6 +86,8 @@ public class ReportBranch extends JFrame{
         btnExport.setBounds(830, 550, 120, 30);
         add(btnExport);
         
+        
+        
                 
          
                 
