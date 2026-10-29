@@ -10,14 +10,11 @@ public class SchoolManagementProject {
         
         
        
-       
-       AttendanceBranch b = new AttendanceBranch();
-       b.setVisible(true);
-       
-        LoginGUI login = new LoginGUI();
-        login.setVisible(true);
+      ReportBranch r = new ReportBranch();
+      r.setVisible(true);
         
-        
+      GradesBranch g = new GradesBranch();
+      g.setVisible(true);
 
        
         
