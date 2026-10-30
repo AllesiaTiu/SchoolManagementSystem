@@ -34,7 +34,7 @@ public String getCourseId(){
     public double getScore(){
         return score;    
     }
-    public void setScoreId(double score){
+    public void setScore(double score){
         this.score = score;
 }
 }
