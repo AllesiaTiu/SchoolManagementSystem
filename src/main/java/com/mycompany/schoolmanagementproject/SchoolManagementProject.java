@@ -10,10 +10,8 @@ public class SchoolManagementProject {
         
         
        
-       
-       
-       GradesBranch s = new GradesBranch();
-       s.setVisible(true);
+     StudentBranch s = new StudentBranch();
+     s.setVisible(true);
 
        
         
