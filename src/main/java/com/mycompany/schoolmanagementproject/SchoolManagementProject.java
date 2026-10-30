@@ -10,14 +10,10 @@ public class SchoolManagementProject {
         
         
        
-      ReportBranch r = new ReportBranch();
-      r.setVisible(true);
-        
-      GradesBranch g = new GradesBranch();
-      g.setVisible(true);
-      
-      CourseBranch c = new CourseBranch();
-      c.setVisible(true);
+       
+       
+       GradesBranch s = new GradesBranch();
+       s.setVisible(true);
 
        
         
