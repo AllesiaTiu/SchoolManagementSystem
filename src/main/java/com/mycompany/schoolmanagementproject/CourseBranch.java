@@ -280,7 +280,7 @@ public class CourseBranch extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "Course updated successfully!");
         }
         
-        // --- DELETE BUTTON ---
+        // --- DELETE BUTTON ----
         else if (e.getSource() == delBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
