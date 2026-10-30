@@ -3,10 +3,12 @@ package com.mycompany.schoolmanagementproject;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class GradesBranch extends JFrame implements ActionListener{
+public class GradesBranch extends JFrame implements ActionListener {
     
     JButton students;
     JButton courses;
@@ -28,22 +30,28 @@ public class GradesBranch extends JFrame implements ActionListener{
     JLabel gradesList;
     
     JTextField idInput;
-    String [] courseList = {"options"};
+    String[] courseList = {
+        "Programming 3", 
+        "Data Structures", 
+        "PathFit", 
+        "RVA", 
+        "DCAN", 
+        "Operating System"
+    };
     JComboBox<String> courseCmb;
     JTextField scoreInput;
     
-    
-    //panel
+    // panels
     JPanel panelInputs;
     JPanel panelTitle;
     JPanel listTitle;
     
-    //table 
+    // table 
     DefaultTableModel tableModel;
     JTable table;
     JScrollPane scrollPane;
             
-    GradesBranch(){
+    GradesBranch() {
         setTitle("Student Branch");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,17 +93,16 @@ public class GradesBranch extends JFrame implements ActionListener{
         courseId = new JLabel("Course ID:");
         courseId.setBounds(30, 60, 100, 30);
         
-        courseCmb = new JComboBox (courseList);
+        courseCmb = new JComboBox<>(courseList);
         courseCmb.setBounds(140, 70, 250, 20);
         
-        
         score = new JLabel("Score:");
-        score.setBounds(30, 90 , 100, 30);
+        score.setBounds(30, 90, 100, 30);
         
         scoreInput = new JTextField();
         scoreInput.setBounds(140, 100, 250, 20);
         
-         addBtn = new JButton("Add");
+        addBtn = new JButton("Add");
         addBtn.setBounds(50, 130, 100, 40);
         
         updBtn = new JButton("Update");
@@ -106,7 +113,6 @@ public class GradesBranch extends JFrame implements ActionListener{
         
         computeAve = new JButton("Average");
         computeAve.setBounds(380, 130, 100, 40);
-       
        
         panelTitle = new JPanel();
         panelTitle.setBackground(Color.PINK);
@@ -131,7 +137,6 @@ public class GradesBranch extends JFrame implements ActionListener{
         panelInputs.add(computeAve);
         add(panelInputs);
         
-        
         gradesList = new JLabel("Grades List");
         gradesList.setBounds(30, 0, 150, 30);
         
@@ -144,38 +149,193 @@ public class GradesBranch extends JFrame implements ActionListener{
         
         tableModel = new DefaultTableModel();
         tableModel.addColumn("Name");
-        tableModel.addColumn("Programmming 3");
+        tableModel.addColumn("Programming 3");
         tableModel.addColumn("Data Structures");
         tableModel.addColumn("PathFit");
         tableModel.addColumn("RVA");
         tableModel.addColumn("DCAN");
         tableModel.addColumn("Operating System");
         tableModel.addColumn("GWA");
+        
         table = new JTable(tableModel);
         scrollPane = new JScrollPane(table);
         scrollPane.setBounds(180, 280, 800, 200);
         add(scrollPane);
         
+        // Navigation button listeners
         grades.addActionListener(this);
         students.addActionListener(this);
         courses.addActionListener(this);
-    
+        
+        // Action button listeners
+        addBtn.addActionListener(this);
+        updBtn.addActionListener(this);
+        deleteBtn.addActionListener(this);
+        computeAve.addActionListener(this);
+        
+        // Clicking a row loads student ID into input field
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.getSelectedRow();
+                if (row != -1) {
+                    idInput.setText(tableModel.getValueAt(row, 0).toString());
+                }
+            }
+        });
+    }
+
+    // Helper method to clear all input fields
+    private void clearFields() {
+        idInput.setText("");
+        scoreInput.setText("");
+        courseCmb.setSelectedIndex(0);
+        table.clearSelection();
+    }
+
+    // Helper method: Finds if a student already exists in the table
+    private int findStudentRow(String name) {
+        for (int i = 0; i < tableModel.getRowCount(); i++) {
+            if (tableModel.getValueAt(i, 0).toString().equalsIgnoreCase(name)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if(e.getSource() == courses){
+        // Navigation
+        if (e.getSource() == courses) {
             CourseBranch c = new CourseBranch();
-             c.setVisible(true);
+            c.setVisible(true);
         }
-        if(e.getSource() == grades){
+        if (e.getSource() == grades) {
             GradesBranch g = new GradesBranch();
             g.setVisible(true);
-        
         }
-        if(e.getSource() == students){
-             StudentBranch s = new StudentBranch();
-              s.setVisible(true);
+        if (e.getSource() == students) {
+            StudentBranch s = new StudentBranch();
+            s.setVisible(true);
+        }
+
+        // --- 1. ADD BUTTON LOGIC ---
+        if (e.getSource() == addBtn) {
+            String id = idInput.getText().trim();
+            String scoreStr = scoreInput.getText().trim();
+
+            if (id.isEmpty() || scoreStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter both Student ID and Score.");
+                return;
+            }
+
+            try {
+                Double.parseDouble(scoreStr);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Score must be a valid number.");
+                return;
+            }
+
+            int colIndex = courseCmb.getSelectedIndex() + 1;
+            int existingRow = findStudentRow(id);
+
+            if (existingRow != -1) {
+                tableModel.setValueAt(scoreStr, existingRow, colIndex);
+            } else {
+                Object[] newRow = new Object[8];
+                newRow[0] = id;
+                for (int i = 1; i < 8; i++) {
+                    newRow[i] = "";
+                }
+                newRow[colIndex] = scoreStr;
+                tableModel.addRow(newRow);
+            }
+
+            // Clears both ID and Score
+            clearFields();
+            JOptionPane.showMessageDialog(this, "Grade recorded successfully!");
+        }
+
+        // --- 2. UPDATE BUTTON LOGIC ---
+        if (e.getSource() == updBtn) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a row in the table to update.");
+                return;
+            }
+
+            String id = idInput.getText().trim();
+            String scoreStr = scoreInput.getText().trim();
+
+            if (!id.isEmpty()) {
+                tableModel.setValueAt(id, selectedRow, 0);
+            }
+
+            if (!scoreStr.isEmpty()) {
+                try {
+                    Double.parseDouble(scoreStr);
+                    int colIndex = courseCmb.getSelectedIndex() + 1;
+                    tableModel.setValueAt(scoreStr, selectedRow, colIndex);
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Score must be a valid number.");
+                    return;
+                }
+            }
+
+            // Clears both ID and Score
+            clearFields();
+            JOptionPane.showMessageDialog(this, "Record updated successfully!");
+        }
+
+        // --- 3. DELETE BUTTON LOGIC ---
+        if (e.getSource() == deleteBtn) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow != -1) {
+                tableModel.removeRow(selectedRow);
+                // Clears both ID and Score
+                clearFields();
+                JOptionPane.showMessageDialog(this, "Record deleted successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Please select a row in the table to delete.");
+            }
+        }
+
+        // --- 4. COMPUTE AVERAGE (GWA) LOGIC ---
+        if (e.getSource() == computeAve) {
+            if (tableModel.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "The table is empty.");
+                return;
+            }
+
+            int selectedRow = table.getSelectedRow();
+            int startRow = (selectedRow != -1) ? selectedRow : 0;
+            int endRow = (selectedRow != -1) ? selectedRow + 1 : tableModel.getRowCount();
+
+            for (int r = startRow; r < endRow; r++) {
+                double total = 0;
+                int count = 0;
+
+                for (int c = 1; c <= 6; c++) {
+                    Object val = tableModel.getValueAt(r, c);
+                    if (val != null && !val.toString().trim().isEmpty()) {
+                        try {
+                            total += Double.parseDouble(val.toString().trim());
+                            count++;
+                        } catch (NumberFormatException ex) {
+                            // Skip non-numeric values
+                        }
+                    }
+                }
+
+                if (count > 0) {
+                    double ave = total / count;
+                    tableModel.setValueAt(String.format("%.2f", ave), r, 7);
+                } else {
+                    tableModel.setValueAt("N/A", r, 7);
+                }
+            }
+
+            JOptionPane.showMessageDialog(this, "GWA computed successfully!");
         }
     }
 }
