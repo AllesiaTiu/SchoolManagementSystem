@@ -9,13 +9,14 @@ public class Student {
     String name;
     static private int idcount;
     int idnum;
-    static private int studentCount;
+    
+    
 
     public Student(String name) {
         this.name = name;
         idcount = random.nextInt(1000, 9999);
         idnum = idcount;
-        studentCount++;
+     
         
         
     }
@@ -32,10 +33,7 @@ public class Student {
         this.name = name;
         
     }
-    static public String getStudentCount(){
-        String studentCountStr = Integer.toString(studentCount);
-        return studentCountStr;
-    }
+  
     
     
     
