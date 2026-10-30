@@ -12,7 +12,7 @@ public class SchoolManagementProject {
        
        
        
-       StudentBranch s = new StudentBranch();
+       TranscriptBranch s = new TranscriptBranch();
        s.setVisible(true);
 
        
