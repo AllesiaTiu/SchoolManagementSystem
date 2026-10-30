@@ -289,17 +289,17 @@ public class CourseBranch extends JFrame implements ActionListener {
             }
             
             if(e.getSource() == courses){
-            CourseBranch c = new CourseBranch();
-             c.setVisible(true);
+            CourseBranch course = new CourseBranch();
+             course.setVisible(true);
         }
         if(e.getSource() == grades){
-            GradesBranch g = new GradesBranch();
-            g.setVisible(true);
+            GradesBranch grade = new GradesBranch();
+            grade.setVisible(true);
         
         }
         if(e.getSource() == students){
-             StudentBranch s = new StudentBranch();
-              s.setVisible(true);
+             StudentBranch stud = new StudentBranch();
+              stud.setVisible(true);
         }
     }
     
