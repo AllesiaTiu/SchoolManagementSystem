@@ -18,6 +18,14 @@ public class CourseManager {
         return false;
     }
     
+    public boolean addCourse(Course c) {
+        if (courseExists(c.getcID())) {
+            return false; // Duplicate found
+    }
+        courses.add(c);
+        return true;
+}
+    
     public boolean updateCourse(String cID, String newName) {
         for(Course c : courses){
             if(c.getcID().equalsIgnoreCase(cID.trim())) {
