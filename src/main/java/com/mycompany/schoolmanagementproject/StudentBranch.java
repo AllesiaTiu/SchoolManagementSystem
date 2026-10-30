@@ -2,9 +2,10 @@ package com.mycompany.schoolmanagementproject;
 
 import java.awt.Color;
 import javax.swing.*;
-import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.table.DefaultTableModel;
@@ -46,19 +47,8 @@ public class StudentBranch extends JFrame implements ActionListener {
     ArrayList<Student> studentList;
     ArrayList<JCheckBox> courseCheckBox;
     
-    //checkboxes
-    JCheckBox programming3;
-    JCheckBox dataStructures;
-    JCheckBox pathfit;
-    JCheckBox rva;
-    JCheckBox computerNetworks;
-    JCheckBox operatingSystem;
-    JCheckBox freeElective;
-    JCheckBox uts;
-    
     //count
     int courseCount;
-    
     
     StudentBranch(){
         setTitle("School Management System");
@@ -116,38 +106,22 @@ public class StudentBranch extends JFrame implements ActionListener {
         
         courseCheckBox = new ArrayList<>();
         
-        programming3 = new JCheckBox("Programming 3");
-        programming3.setBounds(10, 10, 120, 10);
-        courseCheckBox.add(programming3);
-        
-        dataStructures = new JCheckBox("Data Structures");
-        dataStructures.setBounds(10, 30, 120, 10);
-        courseCheckBox.add(dataStructures);
-        
-        pathfit = new JCheckBox("PathFit");
-        pathfit.setBounds(10, 50, 120, 10);
-        courseCheckBox.add(pathfit);
-        
-        rva = new JCheckBox("Reading in Visual Arts");
-        rva.setBounds(10, 70, 200, 10);
-        courseCheckBox.add(rva);
-        
-        computerNetworks = new JCheckBox("Computer Networks");
-        computerNetworks.setBounds(10, 90, 180, 10);
-        courseCheckBox.add(computerNetworks);
-        
-        operatingSystem = new JCheckBox("Operating Systems");
-        operatingSystem.setBounds(10, 110, 180, 10);
-        courseCheckBox.add(operatingSystem);
-        
         courseBox = new JPanel();
         courseBox.setBackground(Color.WHITE);
         courseBox.setLayout(null);
-        courseBox.setPreferredSize(new java.awt.Dimension(230, 200));
-        
-        for(JCheckBox checkBox:courseCheckBox){
-            courseBox.add(checkBox);
+
+        // Dynamically load checkboxes from available courses in database
+        ArrayList<String> availableCourses = StudentManager.getAvailableCourses();
+        int yPos = 10;
+        for (String cName : availableCourses) {
+            JCheckBox cb = new JCheckBox(cName);
+            cb.setBounds(10, yPos, 200, 20);
+            cb.setBackground(Color.WHITE);
+            courseCheckBox.add(cb);
+            courseBox.add(cb);
+            yPos += 25;
         }
+        courseBox.setPreferredSize(new java.awt.Dimension(230, Math.max(200, yPos + 10)));
         
         scrollCourse = new JScrollPane(courseBox);
         scrollCourse.setBounds(140, 95, 250, 100);
@@ -201,130 +175,203 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane = new JScrollPane(table);
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
+
+        // Click row in table to populate textboxes (makes update/delete easy)
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.getSelectedRow();
+                if (row != -1) {
+                    idInput.setText(tableModel.getValueAt(row, 0).toString());
+                    nameInput.setText(tableModel.getValueAt(row, 1).toString());
+                }
+            }
+        });
         
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
+        transcript.addActionListener(this);
+        report.addActionListener(this);
+        attendance.addActionListener(this);
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
+        searchBtn.addActionListener(this);
         sortBtn.addActionListener(this);
-     
+
+        // Load existing students from DB on startup
+        studentList = StudentManager.getAllStudents();
+        refreshTable();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       
-        String nameText = nameInput.getText();
-        String idText = idInput.getText();
+        String nameText = nameInput.getText().trim();
+        String idText = idInput.getText().trim();
         
+        // --- ADD BUTTON ---
         if(e.getSource() == addBtn){
+            if (nameText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter student name.");
+                return;
+            }
+
+            Student student = new Student(nameText);
             
-           
-                 boolean exist = false;
-                for(Student list:studentList ){
-                        if(list.getID().equals(idText)){
-                             exist = true;
-                             break;
-                        }
+            // Collect checked courses
+            for (JCheckBox cb : courseCheckBox) {
+                if (cb.isSelected()) {
+                    student.enrollCourse(cb.getText());
                 }
-                if(exist){
-                    JOptionPane.showMessageDialog(this, "Error");
-                }
-                else{
-                     Student student = new Student(nameText);
-                         studentList.add(student);
-                         
-                         tableModel.addRow(new Object[]{ 
-                             student.getID(),
-                            student.getName(),
-                             countCourses()
-                    
-                           });
-                         
-                         
-                }
-                
-                
-           
+            }
+
+            // Save to MySQL via StudentManager
+            if (StudentManager.addStudent(student)) {
+                studentList.add(student);
+                refreshTable();
+                nameInput.setText("");
+                idInput.setText("");
+                for (JCheckBox cb : courseCheckBox) cb.setSelected(false);
+                JOptionPane.showMessageDialog(this, "Student Added Successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Database Error: Could not save student.");
+            }
         }
+
+        // --- UPDATE BUTTON ---
+        if (e.getSource() == updBtn) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Select a student from the table first.");
+                return;
+            }
+            if (nameText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a name to update.");
+                return;
+            }
+
+            String currentId = tableModel.getValueAt(selectedRow, 0).toString();
+            if (StudentManager.updateStudent(currentId, nameText)) {
+                for (Student s : studentList) {
+                    if (s.getID().equals(currentId)) {
+                        s.setName(nameText);
+                        break;
+                    }
+                }
+                refreshTable();
+                nameInput.setText("");
+                idInput.setText("");
+                JOptionPane.showMessageDialog(this, "Student Updated Successfully!");
+            } else {
+                JOptionPane.showMessageDialog(this, "Update failed.");
+            }
+        }
+
+        // --- DELETE BUTTON ---
+        if (e.getSource() == deleteBtn) {
+            int selectedRow = table.getSelectedRow();
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Select a student from the table first.");
+                return;
+            }
+
+            String currentId = tableModel.getValueAt(selectedRow, 0).toString();
+            int confirm = JOptionPane.showConfirmDialog(this, "Delete student " + currentId + "?", "Confirm", JOptionPane.YES_NO_OPTION);
+            
+            if (confirm == JOptionPane.YES_OPTION) {
+                if (StudentManager.deleteStudent(currentId)) {
+                    studentList.removeIf(s -> s.getID().equals(currentId));
+                    refreshTable();
+                    nameInput.setText("");
+                    idInput.setText("");
+                    JOptionPane.showMessageDialog(this, "Student Deleted Successfully!");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Delete failed.");
+                }
+            }
+        }
+
+        // --- SORT BUTTON ---
         if(e.getSource() == sortBtn){
-           
             bubbleSort(studentList);
             refreshTable();
         }
         
+        // --- SEARCH BUTTON ---
         if(e.getSource() == searchBtn){
-            
-            
-            
+            String query = searchInput.getText().trim().toLowerCase();
+            if (query.isEmpty()) {
+                refreshTable();
+                return;
+            }
+
+            tableModel.setRowCount(0);
+            for (Student s : studentList) {
+                if (s.getName().toLowerCase().contains(query) || s.getID().toLowerCase().contains(query)) {
+                    tableModel.addRow(new Object[]{
+                        s.getID(),
+                        s.getName(),
+                        s.getEnrolledCourses().size(),
+                        "0.0"
+                    });
+                }
+            }
         }
+
+        // --- NAVIGATION BUTTONS ---
         if(e.getSource() == courses){
-            CourseBranch c = new CourseBranch();
-             c.setVisible(true);
+            new CourseBranch().setVisible(true);
+            this.dispose();
         }
         if(e.getSource() == grades){
-            GradesBranch g = new GradesBranch();
-            g.setVisible(true);
-        
+            new GradesBranch().setVisible(true);
+            this.dispose();
         }
         if(e.getSource() == students){
-             StudentBranch s = new StudentBranch();
-              s.setVisible(true);
+            // Already on students
         }
-        
-        
+        if(e.getSource() == attendance){
+            new AttendanceBranch().setVisible(true);
+            this.dispose();
+        }
+        if(e.getSource() == report){
+            new ReportBranch().setVisible(true);
+            this.dispose();
+        }
     }
+    
     public int countCourses(){
-          for(int i = 0; i< courseCheckBox.size(); i++){
-            
+        int count = 0;
+        for(int i = 0; i < courseCheckBox.size(); i++){
             if(courseCheckBox.get(i).isSelected()){
-                courseCount++;
-          
+                count++;
             }
         }
-        return courseCount;
+        return count;
     }
-    public void binarySearch(ArrayList<Student> studentList, String searchInput){
-        
-        
-        
-        
-    }
+
     public void bubbleSort(ArrayList<Student> studentList){
-        
-                       
-             for(int i = 0; i < studentList.size()- 1; i++){
-                    for(int j = 0; j < studentList.size() - i - 1; j++){
-                
-                      if(studentList.get(i).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
-                    
-                        Student temp = studentList.get(j);
-                        studentList.set(j, studentList.get(j + 1));
-                        studentList.set(j + 1, temp);
-                         
-                         
+        for(int i = 0; i < studentList.size() - 1; i++){
+            for(int j = 0; j < studentList.size() - i - 1; j++){
+                if(studentList.get(j).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
+                    Student temp = studentList.get(j);
+                    studentList.set(j, studentList.get(j + 1));
+                    studentList.set(j + 1, temp);
                 }
-              
             }
-          
         }
-        
-      
-        
     }
+
     public void refreshTable(){
         tableModel.setRowCount(0);
-        
-       for(Student list:studentList){
-           tableModel.addRow(new Object[] {list.getID(), list.getName(), countCourses()});
-       }
-        
+        for(Student list : studentList){
+            tableModel.addRow(new Object[] {
+                list.getID(), 
+                list.getName(), 
+                list.getEnrolledCourses() != null ? list.getEnrolledCourses().size() : 0, 
+                "0.0"
+            });
+        }
     }
-    
-    
-    
-    
-    
-    
 }
