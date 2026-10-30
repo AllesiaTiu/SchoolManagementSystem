@@ -18,23 +18,35 @@ public class CourseManager {
         return false;
     }
     
-    public boolean addCourse(Course c) {
-        if (courseExists(c.getcID())) {
+    public boolean addCourse(Course course) {
+        if (courseExists(course.getcID())) {
             return false; // Duplicate found
     }
-        courses.add(c);
-        return true;
+        courses.add(course);
+    return true;
 }
     
-    public boolean updateCourse(String cID, String newName) {
-        for(Course c : courses){
-            if(c.getcID().equalsIgnoreCase(cID.trim())) {
-                c.setcName(newName.trim());
-                return true;
+    public boolean updateCourse(String oldId, String newId, String newName) {
+    // 1. If the ID is being changed, check if the new ID already exists
+    if (!oldId.equalsIgnoreCase(newId)) {
+        for (Course c : courses) {
+            if (c.getcID().equalsIgnoreCase(newId)) {
+                return false; // Duplicate ID found, abort update
             }
         }
-        return false;
     }
+
+    // 2. Find the course with oldId and update its values
+    for (Course c : courses) {
+        if (c.getcID().equalsIgnoreCase(oldId)) {
+            c.setcID(newId);
+            c.setcName(newName);
+            return true; // Successfully updated
+        }
+    }
+
+    return false; // Old course was not found
+}
     
     public boolean deleteCourse(String cID) {
         return courses.removeIf(c -> c.getcID().equalsIgnoreCase(cID.trim()));
