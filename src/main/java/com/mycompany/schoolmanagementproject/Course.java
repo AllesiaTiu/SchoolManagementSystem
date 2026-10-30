@@ -4,16 +4,17 @@ public class Course {
     private String cID;
     private String cName;
     
+    //para maaccess ng global variable at macall 
     public Course(String cID, String cName) {
         this.cID = cID;
         this.cName = cName;
         
     }
-    
+    //returns course ID
     public String getcID() {
         return cID;
     }
-    
+    //returns course Name
     public String getcName() {
         return cName;
     }
