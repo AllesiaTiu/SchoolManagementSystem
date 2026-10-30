@@ -257,19 +257,22 @@ public class CourseBranch extends JFrame implements ActionListener {
                 return;
             }
             
-            String id = tblM.getValueAt(selectedRow, 0).toString();
+            // Get original ID from selected row
+            String oldId = tblM.getValueAt(selectedRow, 0).toString();
+            // Get updated values from input text fields
+            String newId = cID_txt.getText().trim();
             String newName = cNM_txt.getText().trim();
             
-            if (newName.isEmpty()) {
+            if (newId.isEmpty() || newName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, 
-                        "Please enter a new Course Name.", 
+                        "Please fill in both Course ID and Course Name.", 
                         "Input Error", 
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            // Delegate update to CourseManager
-            courseManager.updateCourse(id, newName);
+            // Delegate update (both ID and Name) to CourseManager
+            courseManager.updateCourse(oldId, newId, newName);
             refreshTable(courseManager.getAllCourses());
             
             cID_txt.setText("");
