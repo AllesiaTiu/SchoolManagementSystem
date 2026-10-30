@@ -34,17 +34,27 @@ public class StudentDAO {
                 }
             }
 
-            conn.commit(); // Commit transaction
+            conn.commit(); // Save everything
             return true;
         } catch (SQLException e) {
-            System.err.println("DAO Error [insertStudent]: " + e.getMessage());
+            System.err.println("Database Insert Error: " + e.getMessage());
+            e.printStackTrace();
             if (conn != null) {
-                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
             }
             return false;
         } finally {
             if (conn != null) {
-                try { conn.setAutoCommit(true); conn.close(); } catch (SQLException e) { e.printStackTrace(); }
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -69,6 +79,7 @@ public class StudentDAO {
             }
         } catch (SQLException e) {
             System.err.println("DAO Error [selectAllStudents]: " + e.getMessage());
+            e.printStackTrace();
         }
         return list;
     }
@@ -88,6 +99,7 @@ public class StudentDAO {
             }
         } catch (SQLException e) {
             System.err.println("DAO Error [selectCoursesByStudentId]: " + e.getMessage());
+            e.printStackTrace();
         }
         return courses;
     }
@@ -103,6 +115,7 @@ public class StudentDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("DAO Error [updateStudentName]: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -117,6 +130,7 @@ public class StudentDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             System.err.println("DAO Error [deleteStudentById]: " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
@@ -135,9 +149,10 @@ public class StudentDAO {
             }
         } catch (SQLException e) {
             System.err.println("DAO Error [selectAvailableCourses]: " + e.getMessage());
+            e.printStackTrace();
         }
 
-        // Fallback default list if no courses added in database yet
+        // Fallback default list if no courses in database yet
         if (courses.isEmpty()) {
             courses.add("Programming 3");
             courses.add("Data Structures");

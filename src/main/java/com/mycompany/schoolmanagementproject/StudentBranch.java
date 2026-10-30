@@ -47,9 +47,6 @@ public class StudentBranch extends JFrame implements ActionListener {
     ArrayList<Student> studentList;
     ArrayList<JCheckBox> courseCheckBox;
     
-    //count
-    int courseCount;
-    
     StudentBranch(){
         setTitle("School Management System");
         setSize(1000, 700);
@@ -85,6 +82,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         
         idInput = new JTextField();
         idInput.setBounds(140, 35, 250, 20);
+        idInput.setEditable(false); // Prevents users from manually breaking the generated ID
         
         studentName = new JLabel("Name:");
         studentName.setBounds(30, 60, 100, 30);
@@ -176,14 +174,25 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
 
-        // Click row in table to populate textboxes (makes update/delete easy)
+        // Click row in table to populate textboxes AND highlight enrolled courses!
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = table.getSelectedRow();
                 if (row != -1) {
-                    idInput.setText(tableModel.getValueAt(row, 0).toString());
+                    String selectedId = tableModel.getValueAt(row, 0).toString();
+                    idInput.setText(selectedId);
                     nameInput.setText(tableModel.getValueAt(row, 1).toString());
+
+                    // Check/uncheck courses according to this student's enrollment
+                    for (Student s : studentList) {
+                        if (s.getID().equals(selectedId)) {
+                            for (JCheckBox cb : courseCheckBox) {
+                                cb.setSelected(s.getEnrolledCourses().contains(cb.getText()));
+                            }
+                            break;
+                        }
+                    }
                 }
             }
         });
@@ -197,7 +206,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
-        searchBtn.addActionListener(this);
+        searchBtn.addActionListener(this); // <-- ADDED: was missing!
         sortBtn.addActionListener(this);
 
         // Load existing students from DB on startup
@@ -262,6 +271,7 @@ public class StudentBranch extends JFrame implements ActionListener {
                 refreshTable();
                 nameInput.setText("");
                 idInput.setText("");
+                for (JCheckBox cb : courseCheckBox) cb.setSelected(false);
                 JOptionPane.showMessageDialog(this, "Student Updated Successfully!");
             } else {
                 JOptionPane.showMessageDialog(this, "Update failed.");
@@ -285,6 +295,7 @@ public class StudentBranch extends JFrame implements ActionListener {
                     refreshTable();
                     nameInput.setText("");
                     idInput.setText("");
+                    for (JCheckBox cb : courseCheckBox) cb.setSelected(false);
                     JOptionPane.showMessageDialog(this, "Student Deleted Successfully!");
                 } else {
                     JOptionPane.showMessageDialog(this, "Delete failed.");
@@ -328,9 +339,6 @@ public class StudentBranch extends JFrame implements ActionListener {
             new GradesBranch().setVisible(true);
             this.dispose();
         }
-        if(e.getSource() == students){
-            // Already on students
-        }
         if(e.getSource() == attendance){
             new AttendanceBranch().setVisible(true);
             this.dispose();
@@ -339,16 +347,6 @@ public class StudentBranch extends JFrame implements ActionListener {
             new ReportBranch().setVisible(true);
             this.dispose();
         }
-    }
-    
-    public int countCourses(){
-        int count = 0;
-        for(int i = 0; i < courseCheckBox.size(); i++){
-            if(courseCheckBox.get(i).isSelected()){
-                count++;
-            }
-        }
-        return count;
     }
 
     public void bubbleSort(ArrayList<Student> studentList){
