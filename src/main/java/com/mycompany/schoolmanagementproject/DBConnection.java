@@ -6,27 +6,28 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/school_management_db";
+    // Added parameters to prevent timezone and SSL warnings in MySQL 8
+    private static final String URL = "jdbc:mysql://localhost:3306/school_management_db?useSSL=false&serverTimezone=UTC";
     private static final String USER = "root";
     private static final String PASSWORD = ""; 
 
-    public static Connection getConnection() {
-        Connection conn = null;
+    public static Connection getConnection() throws SQLException {
         try {
-            conn = DriverManager.getConnection(URL, USER, PASSWORD);
-        } catch (SQLException e) {
-            System.err.println("Database Connection Failed: " + e.getMessage());
+            // Explicitly loads MySQL driver class (good practice for NetBeans/Maven projects)
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            System.err.println("MySQL JDBC Driver not found! Check your dependencies.");
         }
-        return conn;
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 
-    
     public static void main(String[] args) {
-        Connection testConn = getConnection();
-        if (testConn != null) {
-            System.out.println("DATABASE CONNECTED SUCCESSFULLY TO XAMPP!");
-        } else {
-            System.out.println("FAILED TO CONNECT TO DATABASE");
+        try (Connection testConn = getConnection()) {
+            if (testConn != null && !testConn.isClosed()) {
+                System.out.println("DATABASE CONNECTED SUCCESSFULLY TO XAMPP!");
+            }
+        } catch (SQLException e) {
+            System.err.println("FAILED TO CONNECT TO DATABASE: " + e.getMessage());
         }
     }
 }
