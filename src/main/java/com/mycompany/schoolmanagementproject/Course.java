@@ -22,4 +22,8 @@ public class Course {
     public void setcName(String cName) {
         this.cName = cName;
     }
+    
+    public void setcID(String cID) {
+        this.cID = cID;
+    }
 }
