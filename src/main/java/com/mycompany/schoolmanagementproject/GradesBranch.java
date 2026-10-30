@@ -5,11 +5,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList; // 1. Added import for ArrayList
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class GradesBranch extends JFrame implements ActionListener {
     
+    // 2. Data store for Grades objects
+    ArrayList<Grades> gradeList = new ArrayList<>();
+
     JButton students;
     JButton courses;
     JButton grades;
@@ -185,7 +189,6 @@ public class GradesBranch extends JFrame implements ActionListener {
         });
     }
 
-    // Helper method to clear all input fields
     private void clearFields() {
         idInput.setText("");
         scoreInput.setText("");
@@ -193,7 +196,6 @@ public class GradesBranch extends JFrame implements ActionListener {
         table.clearSelection();
     }
 
-    // Helper method: Finds if a student already exists in the table
     private int findStudentRow(String name) {
         for (int i = 0; i < tableModel.getRowCount(); i++) {
             if (tableModel.getValueAt(i, 0).toString().equalsIgnoreCase(name)) {
@@ -205,7 +207,6 @@ public class GradesBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Navigation
         if (e.getSource() == courses) {
             CourseBranch c = new CourseBranch();
             c.setVisible(true);
@@ -219,9 +220,10 @@ public class GradesBranch extends JFrame implements ActionListener {
             s.setVisible(true);
         }
 
-        // --- 1. ADD BUTTON LOGIC ---
+        // --- 1. ADD BUTTON (Using Grades Object) ---
         if (e.getSource() == addBtn) {
             String id = idInput.getText().trim();
+            String course = courseCmb.getSelectedItem().toString();
             String scoreStr = scoreInput.getText().trim();
 
             if (id.isEmpty() || scoreStr.isEmpty()) {
@@ -229,34 +231,39 @@ public class GradesBranch extends JFrame implements ActionListener {
                 return;
             }
 
+            double scoreVal;
             try {
-                Double.parseDouble(scoreStr);
+                scoreVal = Double.parseDouble(scoreStr);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Score must be a valid number.");
                 return;
             }
 
+            // Create a Grades object
+            Grades newGrade = new Grades(id, course, scoreVal);
+            gradeList.add(newGrade);
+
+            // Update the UI Table using the Grades object's getters
             int colIndex = courseCmb.getSelectedIndex() + 1;
-            int existingRow = findStudentRow(id);
+            int existingRow = findStudentRow(newGrade.getStudentId());
 
             if (existingRow != -1) {
-                tableModel.setValueAt(scoreStr, existingRow, colIndex);
+                tableModel.setValueAt(String.valueOf(newGrade.getScore()), existingRow, colIndex);
             } else {
                 Object[] newRow = new Object[8];
-                newRow[0] = id;
+                newRow[0] = newGrade.getStudentId();
                 for (int i = 1; i < 8; i++) {
                     newRow[i] = "";
                 }
-                newRow[colIndex] = scoreStr;
+                newRow[colIndex] = String.valueOf(newGrade.getScore());
                 tableModel.addRow(newRow);
             }
 
-            // Clears both ID and Score
             clearFields();
             JOptionPane.showMessageDialog(this, "Grade recorded successfully!");
         }
 
-        // --- 2. UPDATE BUTTON LOGIC ---
+        // --- 2. UPDATE BUTTON (Using Grades Object) ---
         if (e.getSource() == updBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
@@ -265,6 +272,7 @@ public class GradesBranch extends JFrame implements ActionListener {
             }
 
             String id = idInput.getText().trim();
+            String course = courseCmb.getSelectedItem().toString();
             String scoreStr = scoreInput.getText().trim();
 
             if (!id.isEmpty()) {
@@ -273,26 +281,34 @@ public class GradesBranch extends JFrame implements ActionListener {
 
             if (!scoreStr.isEmpty()) {
                 try {
-                    Double.parseDouble(scoreStr);
+                    double scoreVal = Double.parseDouble(scoreStr);
+                    
+                    // Create/update the Grades object
+                    Grades updatedGrade = new Grades(id.isEmpty() ? tableModel.getValueAt(selectedRow, 0).toString() : id, course, scoreVal);
+                    gradeList.add(updatedGrade);
+
                     int colIndex = courseCmb.getSelectedIndex() + 1;
-                    tableModel.setValueAt(scoreStr, selectedRow, colIndex);
+                    tableModel.setValueAt(String.valueOf(updatedGrade.getScore()), selectedRow, colIndex);
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Score must be a valid number.");
                     return;
                 }
             }
 
-            // Clears both ID and Score
             clearFields();
             JOptionPane.showMessageDialog(this, "Record updated successfully!");
         }
 
-        // --- 3. DELETE BUTTON LOGIC ---
+        // --- 3. DELETE BUTTON ---
         if (e.getSource() == deleteBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
+                String studentToDelete = tableModel.getValueAt(selectedRow, 0).toString();
+                
+                // Remove this student's records from gradeList
+                gradeList.removeIf(g -> g.getStudentId().equalsIgnoreCase(studentToDelete));
+                
                 tableModel.removeRow(selectedRow);
-                // Clears both ID and Score
                 clearFields();
                 JOptionPane.showMessageDialog(this, "Record deleted successfully!");
             } else {
@@ -300,7 +316,7 @@ public class GradesBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- 4. COMPUTE AVERAGE (GWA) LOGIC ---
+        // --- 4. COMPUTE AVERAGE (GWA) ---
         if (e.getSource() == computeAve) {
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this, "The table is empty.");
