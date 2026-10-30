@@ -3,14 +3,16 @@ package com.mycompany.schoolmanagementproject;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList; // 1. IMPORT ARRAYLIST
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class CourseBranch extends JFrame implements ActionListener {
     
-    // --- Course Data Storage ---
-    private ArrayList<Course> courseList = new ArrayList<>(); // 2. LIST TO HOLD COURSE OBJECTS
+    // --- 1. Model / Manager Instance ---
+    private CourseManager courseManager;
     
     // Navigation Buttons
     private JButton students, courses, grades, transcript, report, attendance;
@@ -33,6 +35,9 @@ public class CourseBranch extends JFrame implements ActionListener {
     private JScrollPane scroll;
     
     public CourseBranch() {
+        // Initialize the CourseManager instance
+        courseManager = new CourseManager();
+        
         // --- Frame Settings ---
         setTitle("School Management System");
         setSize(1000, 700);
@@ -42,17 +47,17 @@ public class CourseBranch extends JFrame implements ActionListener {
         // --- 1. Navigation Sidebar Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
-        students.addActionListener(this); // Added listener
+        students.addActionListener(this);
         add(students);
         
         courses = new JButton("Courses");
         courses.setBounds(20, 90, 150, 50);
-        courses.addActionListener(this); // Added listener
+        courses.addActionListener(this);
         add(courses);
         
         grades = new JButton("Grades");
         grades.setBounds(20, 150, 150, 50);
-        grades.addActionListener(this); // Added listener
+        grades.addActionListener(this);
         add(grades);
         
         transcript = new JButton("Transcript");
@@ -73,6 +78,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelInputs.setBounds(180, 30, 600, 250);
         panelInputs.setLayout(null);
         
+        // Title banner inside input panel
         titleCM = new JLabel("Course Management");
         titleCM.setBounds(30, 0, 150, 30);
         
@@ -83,6 +89,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelTitle.add(titleCM);
         panelInputs.add(panelTitle);
         
+        // Course ID field
         courseID = new JLabel("Course ID: ");
         courseID.setBounds(30, 30, 100, 30);
         panelInputs.add(courseID);
@@ -91,6 +98,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         cID_txt.setBounds(150, 35, 250, 20);
         panelInputs.add(cID_txt);
         
+        // Course Name field
         courseName = new JLabel("Course Name: ");
         courseName.setBounds(30, 60, 100, 30);
         panelInputs.add(courseName);
@@ -99,6 +107,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         cNM_txt.setBounds(150, 65, 250, 20);
         panelInputs.add(cNM_txt);
         
+        // Enrolled Students display
         enrllStud = new JLabel("Enrolled Students: ");
         enrllStud.setBounds(30, 90, 120, 30);
         panelInputs.add(enrllStud);
@@ -113,6 +122,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelEnr.add(noStudenr);
         panelInputs.add(panelEnr);
         
+        // Action buttons
         addBtn = new JButton("Add");
         addBtn.setBounds(30, 190, 100, 40);
         addBtn.addActionListener(this); 
@@ -136,6 +146,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         panelSort.setBounds(790, 30, 200, 250);
         panelSort.setLayout(null);
         
+        // Title banner inside sort panel
         sortC = new JLabel("Sort Courses");
         sortC.setBounds(30, 0, 150, 30);
         
@@ -146,6 +157,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         pinkSort.add(sortC);
         panelSort.add(pinkSort);
         
+        // Search controls
         srchLbl = new JLabel("Search Course");
         srchLbl.setBounds(30, 60, 100, 30);
         panelSort.add(srchLbl);
@@ -156,10 +168,13 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         srch2Btn = new JButton("Search");
         srch2Btn.setBounds(30, 120, 100, 40);
+        srch2Btn.addActionListener(this);
         panelSort.add(srch2Btn);
         
+        // Sort button
         sortBtn = new JButton("Sort by Name(A-Z)");
         sortBtn.setBounds(20, 190, 150, 40);
+        sortBtn.addActionListener(this);
         panelSort.add(sortBtn);
         
         add(panelSort);
@@ -171,6 +186,19 @@ public class CourseBranch extends JFrame implements ActionListener {
         tblM.addColumn("Enrolled Students");
         
         table = new JTable(tblM);
+        
+        // Clicking a row in the table populates the text fields automatically
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = table.getSelectedRow();
+                if (selectedRow != -1) {
+                    cID_txt.setText(tblM.getValueAt(selectedRow, 0).toString());
+                    cNM_txt.setText(tblM.getValueAt(selectedRow, 1).toString());
+                }
+            }
+        });
+        
         scroll = new JScrollPane(table);
         scroll.setBounds(180, 290, 700, 200);
         add(scroll);
@@ -180,15 +208,15 @@ public class CourseBranch extends JFrame implements ActionListener {
         courses.addActionListener(this);
     }
     
-    // Helper to refresh table display from the course list
-    private void refreshTable() {
-        tblM.setRowCount(0);
-        for (Course c : courseList) {
+    // --- Helper Method to Re-render Table Rows ---
+    private void refreshTable(List<Course> listToDisplay) {
+        tblM.setRowCount(0); // Clear current rows
+        for (Course c : listToDisplay) {
             tblM.addRow(new Object[]{c.getcID(), c.getcName(), "0 Students"});
         }
     }
     
-    // Action Event Handling
+    // --- Action Event Handling ---
     @Override
     public void actionPerformed(ActionEvent e) {
         
@@ -205,24 +233,17 @@ public class CourseBranch extends JFrame implements ActionListener {
                 return;
             }
             
-            // Check for duplicates using Course objects
-            for (Course c : courseList) {
-                if (c.getcID().equalsIgnoreCase(id)) {
-                    JOptionPane.showMessageDialog(this, 
-                            "A course with this ID already exists.", 
-                            "Duplicate ID", 
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
+            // Delegate insertion & duplicate checking to CourseManager
+            boolean added = courseManager.addCourse(new Course(id, name));
+            if (!added) {
+                JOptionPane.showMessageDialog(this, 
+                        "A course with this ID already exists.", 
+                        "Duplicate ID", 
+                        JOptionPane.WARNING_MESSAGE);
+                return;
             }
             
-            // 3. CREATE & SAVE NEW COURSE OBJECT
-            Course newCourse = new Course(id, name);
-            courseList.add(newCourse);
-            
-            // Update table
-            refreshTable();
-            
+            refreshTable(courseManager.getAllCourses());
             cID_txt.setText("");
             cNM_txt.setText("");
             cID_txt.requestFocus();
@@ -232,43 +253,29 @@ public class CourseBranch extends JFrame implements ActionListener {
         // --- UPDATE BUTTON ---
         else if (e.getSource() == updBtn) {
             int selectedRow = table.getSelectedRow();
-            
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, 
-                        "Please select a course to update.", 
+                        "Please select a course from the table to update.", 
                         "Selection Error", 
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
             
-            String id = cID_txt.getText().trim();
-            String name = cNM_txt.getText().trim();
+            String id = tblM.getValueAt(selectedRow, 0).toString();
+            String newName = cNM_txt.getText().trim();
             
-            if (id.isEmpty() || name.isEmpty()) {
+            if (newName.isEmpty()) {
                 JOptionPane.showMessageDialog(this, 
-                        "Please fill in both Course ID and Course Name.", 
+                        "Please enter a new Course Name.", 
                         "Input Error", 
                         JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            // Check duplicate ID excluding current selection
-            for (int i = 0; i < courseList.size(); i++) {
-                if (i != selectedRow && courseList.get(i).getcID().equalsIgnoreCase(id)) {
-                    JOptionPane.showMessageDialog(this, 
-                            "Another course with this ID already exists.", 
-                            "Duplicate ID", 
-                            JOptionPane.WARNING_MESSAGE);
-                    return;
-                }
-            }
+            // Delegate update to CourseManager
+            courseManager.updateCourse(id, newName);
+            refreshTable(courseManager.getAllCourses());
             
-            // 4. UPDATE COURSE OBJECT
-            Course selectedCourse = courseList.get(selectedRow);
-            selectedCourse.setcID(id);
-            selectedCourse.setcName(name);
-            
-            refreshTable();
             cID_txt.setText("");
             cNM_txt.setText("");
             JOptionPane.showMessageDialog(this, "Course updated successfully!");
@@ -277,7 +284,6 @@ public class CourseBranch extends JFrame implements ActionListener {
         // --- DELETE BUTTON ---
         else if (e.getSource() == delBtn) {
             int selectedRow = table.getSelectedRow();
-            
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, 
                         "Please select a course to delete.", 
@@ -286,15 +292,16 @@ public class CourseBranch extends JFrame implements ActionListener {
                 return;
             }
             
+            String id = tblM.getValueAt(selectedRow, 0).toString();
+            
             int confirm = JOptionPane.showConfirmDialog(this, 
                     "Are you sure you want to delete this course?", 
                     "Confirm Deletion", 
                     JOptionPane.YES_NO_OPTION);
             
             if (confirm == JOptionPane.YES_OPTION) {
-                // 5. REMOVE COURSE OBJECT
-                courseList.remove(selectedRow);
-                refreshTable();
+                courseManager.deleteCourse(id);
+                refreshTable(courseManager.getAllCourses());
                 
                 cID_txt.setText("");
                 cNM_txt.setText("");
@@ -302,19 +309,37 @@ public class CourseBranch extends JFrame implements ActionListener {
             }
         }
         
-        // --- NAVIGATION BUTTONS (Properly placed outside delBtn) ---
+        // --- SEARCH BUTTON ---
+        else if (e.getSource() == srch2Btn) {
+            String query = inputCourse.getText().trim();
+            if (query.isEmpty()) {
+                refreshTable(courseManager.getAllCourses());
+            } else {
+                List<Course> searchResults = courseManager.searchCourses(query);
+                refreshTable(searchResults);
+            }
+        }
+        
+        // --- SORT BUTTON ---
+        else if (e.getSource() == sortBtn) {
+            courseManager.sortCByName();
+            refreshTable(courseManager.getAllCourses());
+            JOptionPane.showMessageDialog(this, "Courses sorted alphabetically!");
+        }
+        
+        // --- NAVIGATION BUTTONS ---
         else if (e.getSource() == courses) {
-            // Already on CourseBranch
+            // Already inside CourseBranch window
         }
         else if (e.getSource() == grades) {
             GradesBranch grade = new GradesBranch();
             grade.setVisible(true);
-            this.dispose(); // Optional: close current window
+            this.dispose();
         }
         else if (e.getSource() == students) {
             StudentBranch stud = new StudentBranch();
             stud.setVisible(true);
-            this.dispose(); // Optional: close current window
+            this.dispose();
         }
     }
 }
