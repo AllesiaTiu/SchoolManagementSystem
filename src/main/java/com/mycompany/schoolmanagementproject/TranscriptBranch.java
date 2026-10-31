@@ -46,7 +46,9 @@ public class TranscriptBranch extends JFrame{
         attendance = new JButton("Attendance");
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
+       
         
+        System.out.println("try");
         
     
     
