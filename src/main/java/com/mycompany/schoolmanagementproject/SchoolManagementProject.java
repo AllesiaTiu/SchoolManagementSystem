@@ -14,6 +14,9 @@ public class SchoolManagementProject {
        
        StudentBranch s = new StudentBranch();
        s.setVisible(true);
+       
+       CourseBranch c = new CourseBranch();
+       c.setVisible(true);
 
        
         
