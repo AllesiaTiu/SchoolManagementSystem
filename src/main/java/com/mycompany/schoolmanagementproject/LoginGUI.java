@@ -1,44 +1,166 @@
 package com.mycompany.schoolmanagementproject;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import javax.swing.*;
 
-public class LoginGUI extends JFrame{
-    JLabel idlbl;
-    JLabel passwordlbl;
-    
-    JTextField idtxt;
-    JTextField passtxt;
-    
-    JButton logInBtn;
-    
-    LoginGUI(){
-        setSize(1000, 700);
-        setLayout(null);
+public class LoginGUI extends JFrame implements ActionListener {
+
+    private JLabel titleLbl, roleLbl, userLbl, passLbl;
+    private JComboBox<String> roleCombo;
+    private JTextField userTxt;
+    private JPasswordField passTxt;
+    private JButton loginBtn, clearBtn;
+    private JPanel headerPanel, mainPanel;
+
+    private AdminDAO adminDAO;
+
+    public LoginGUI() {
+        adminDAO = new AdminDAO();
+
+        setTitle("School Management System - Portal Login");
+        setSize(450, 420);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        
-        idlbl = new JLabel("Student ID: ");
-        idlbl.setBounds(225,100, 100, 30);
-        add(idlbl);
-        
-        idtxt = new JTextField();
-        idtxt.setBounds(325, 100, 250, 30);
-        add(idtxt);
-        
-        passwordlbl = new JLabel("Password: ");
-        passwordlbl.setBounds(225, 140, 100, 30);
-        add(passwordlbl);
-        
-        passtxt = new JTextField();
-        passtxt.setBounds(325, 140, 250, 30);
-        add(passtxt);
-        
-        logInBtn = new JButton("Login");
-        logInBtn.setBounds(365, 180, 150, 50);
-        add(logInBtn);
-        
-        
-        
-        
+        setLocationRelativeTo(null);
+        setResizable(false);
+        setLayout(null);
+
+        // Header Panel (matching your theme's pink banner)
+        headerPanel = new JPanel();
+        headerPanel.setBackground(Color.PINK);
+        headerPanel.setBounds(0, 0, 450, 60);
+        headerPanel.setLayout(null);
+
+        titleLbl = new JLabel("School Portal Login");
+        titleLbl.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLbl.setBounds(130, 15, 200, 30);
+        headerPanel.add(titleLbl);
+        add(headerPanel);
+
+        // Main Form Panel
+        mainPanel = new JPanel();
+        mainPanel.setBackground(Color.LIGHT_GRAY);
+        mainPanel.setBounds(40, 80, 355, 270);
+        mainPanel.setLayout(null);
+
+        // Role Selector (Admin vs User)
+        roleLbl = new JLabel("Login As:");
+        roleLbl.setBounds(30, 25, 80, 25);
+        mainPanel.add(roleLbl);
+
+        roleCombo = new JComboBox<>(new String[]{"Admin", "User (Student)"});
+        roleCombo.setBounds(120, 25, 190, 25);
+        roleCombo.addActionListener(this);
+        mainPanel.add(roleCombo);
+
+        // Username
+        userLbl = new JLabel("Username:");
+        userLbl.setBounds(30, 75, 80, 25);
+        mainPanel.add(userLbl);
+
+        userTxt = new JTextField();
+        userTxt.setBounds(120, 75, 190, 25);
+        mainPanel.add(userTxt);
+
+        // Password
+        passLbl = new JLabel("Password:");
+        passLbl.setBounds(30, 125, 80, 25);
+        mainPanel.add(passLbl);
+
+        passTxt = new JPasswordField();
+        passTxt.setBounds(120, 125, 190, 25);
+        mainPanel.add(passTxt);
+
+        // Buttons
+        loginBtn = new JButton("Login");
+        loginBtn.setBounds(50, 190, 100, 35);
+        loginBtn.addActionListener(this);
+        mainPanel.add(loginBtn);
+
+        clearBtn = new JButton("Clear");
+        clearBtn.setBounds(180, 190, 100, 35);
+        clearBtn.addActionListener(this);
+        mainPanel.add(clearBtn);
+
+        add(mainPanel);
     }
-    
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        // Toggle input fields if User is selected
+        if (e.getSource() == roleCombo) {
+            String selectedRole = roleCombo.getSelectedItem().toString();
+            if (selectedRole.equals("User (Student)")) {
+                userTxt.setText("");
+                passTxt.setText("");
+                userTxt.setEnabled(false);
+                passTxt.setEnabled(false);
+            } else {
+                userTxt.setEnabled(true);
+                passTxt.setEnabled(true);
+            }
+            return;
+        }
+
+        // Clear button
+        if (e.getSource() == clearBtn) {
+            userTxt.setText("");
+            passTxt.setText("");
+            userTxt.requestFocus();
+            return;
+        }
+
+        // Login button
+        if (e.getSource() == loginBtn) {
+            String selectedRole = roleCombo.getSelectedItem().toString();
+
+            // Case 1: USER side (Placeholder for 50% milestone)
+            if (selectedRole.equals("User (Student)")) {
+                JOptionPane.showMessageDialog(this,
+                        "User / Student Portal is currently under development (Phase 2).\nPlease select 'Admin' to continue.",
+                        "Notice",
+                        JOptionPane.INFORMATION_MESSAGE);
+                return;
+            }
+
+            // Case 2: ADMIN side
+            String username = userTxt.getText().trim();
+            String password = new String(passTxt.getPassword()).trim();
+
+            if (username.isEmpty() || password.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Please enter both Username and Password.",
+                        "Input Error",
+                        JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Authenticate with MySQL database
+            boolean isValid = adminDAO.validateAdmin(username, password);
+
+            if (isValid) {
+                JOptionPane.showMessageDialog(this, "Login Successful! Welcome, Admin.");
+                
+                // Open StudentBranch as the initial landing page
+                StudentBranch studentBranch = new StudentBranch();
+                studentBranch.setVisible(true);
+                
+                // Close login window
+                this.dispose();
+            } else {
+                JOptionPane.showMessageDialog(this,
+                        "Invalid Username or Password.",
+                        "Login Failed",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new LoginGUI().setVisible(true);
+        });
+    }
 }
