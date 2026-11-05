@@ -199,7 +199,7 @@ public class ReportBranch extends JFrame implements ActionListener {
         reportList = reportManager.getAllReports();
         refreshTable(reportList);
     }
-
+     //refresh
     private void refreshTable(ArrayList<StudentReport> list) {
         reportModel.setRowCount(0);
         for (StudentReport r : list) {
