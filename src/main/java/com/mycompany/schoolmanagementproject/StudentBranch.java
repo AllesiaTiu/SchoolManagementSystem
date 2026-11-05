@@ -1,56 +1,36 @@
 package com.mycompany.schoolmanagementproject;
 
 import java.awt.Color;
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.*;
-import javax.swing.JFrame;
+import java.util.ArrayList;
+import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class StudentBranch extends JFrame implements ActionListener {
 
-    JButton students;
-    JButton courses;
-    JButton grades;
-    JButton transcript;
-    JButton report;
-    JButton attendance;
-    JButton addBtn;
-    JButton updBtn;
-    JButton deleteBtn;
-    JButton searchBtn;
-    JButton sortBtn;
+    JButton students, courses, grades, transcript, report, attendance;
+    JButton addBtn, updBtn, deleteBtn, searchBtn, sortBtn;
     
-    JPanel panelInputs;
-    JPanel panelTitle;
-    JPanel courseBox;
+    JPanel panelInputs, panelTitle, courseBox;
+    JLabel title, studentId, studentName, studentCourse;
+    JTextField nameInput, idInput, searchInput;
     
-    JLabel title;
-    JLabel studentId;
-    JLabel studentName;
-    JLabel studentCourse;
-    
-    JTextField nameInput;
-    JTextField idInput;
-    JTextField searchInput;
-    
-    //Table
     DefaultTableModel tableModel;
     JTable table;
-    JScrollPane scrollPane;
-    JScrollPane scrollCourse;
+    JScrollPane scrollPane, scrollCourse;
     
-    //ArrayLists
+    // Explicit ArrayLists for storage
     ArrayList<Student> studentList;
     ArrayList<JCheckBox> courseCheckBox;
-    
-    StudentBranch(){
+
+    public StudentBranch() {
         setTitle("School Management System");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(null);
         
         students = new JButton("Students");
@@ -82,7 +62,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         
         idInput = new JTextField();
         idInput.setBounds(140, 35, 250, 20);
-        idInput.setEditable(false); // Prevents users from manually breaking the generated ID
+        idInput.setEditable(false);
         
         studentName = new JLabel("Name:");
         studentName.setBounds(30, 60, 100, 30);
@@ -103,12 +83,10 @@ public class StudentBranch extends JFrame implements ActionListener {
         panelTitle.add(title);
         
         courseCheckBox = new ArrayList<>();
-        
         courseBox = new JPanel();
         courseBox.setBackground(Color.WHITE);
         courseBox.setLayout(null);
 
-        // Dynamically load checkboxes from available courses in database
         ArrayList<String> availableCourses = StudentManager.getAvailableCourses();
         int yPos = 10;
         for (String cName : availableCourses) {
@@ -147,7 +125,6 @@ public class StudentBranch extends JFrame implements ActionListener {
         panelInputs.add(updBtn);
         panelInputs.add(deleteBtn);
         panelInputs.add(scrollCourse);
-        
         add(panelInputs);
         
         searchInput = new JTextField();
@@ -174,7 +151,6 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
 
-        // Click row in table to populate textboxes AND highlight enrolled courses!
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -184,7 +160,6 @@ public class StudentBranch extends JFrame implements ActionListener {
                     idInput.setText(selectedId);
                     nameInput.setText(tableModel.getValueAt(row, 1).toString());
 
-                    // Check/uncheck courses according to this student's enrollment
                     for (Student s : studentList) {
                         if (s.getID().equals(selectedId)) {
                             for (JCheckBox cb : courseCheckBox) {
@@ -206,10 +181,9 @@ public class StudentBranch extends JFrame implements ActionListener {
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
-        searchBtn.addActionListener(this); // <-- ADDED: was missing!
+        searchBtn.addActionListener(this);
         sortBtn.addActionListener(this);
 
-        // Load existing students from DB on startup
         studentList = StudentManager.getAllStudents();
         refreshTable();
     }
@@ -219,23 +193,19 @@ public class StudentBranch extends JFrame implements ActionListener {
         String nameText = nameInput.getText().trim();
         String idText = idInput.getText().trim();
         
-        // --- ADD BUTTON ---
-        if(e.getSource() == addBtn){
+        if (e.getSource() == addBtn) {
             if (nameText.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Please enter student name.");
                 return;
             }
 
             Student student = new Student(nameText);
-            
-            // Collect checked courses
             for (JCheckBox cb : courseCheckBox) {
                 if (cb.isSelected()) {
                     student.enrollCourse(cb.getText());
                 }
             }
 
-            // Save to MySQL via StudentManager
             if (StudentManager.addStudent(student)) {
                 studentList.add(student);
                 refreshTable();
@@ -248,7 +218,6 @@ public class StudentBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- UPDATE BUTTON ---
         if (e.getSource() == updBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
@@ -273,12 +242,9 @@ public class StudentBranch extends JFrame implements ActionListener {
                 idInput.setText("");
                 for (JCheckBox cb : courseCheckBox) cb.setSelected(false);
                 JOptionPane.showMessageDialog(this, "Student Updated Successfully!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Update failed.");
             }
         }
 
-        // --- DELETE BUTTON ---
         if (e.getSource() == deleteBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
@@ -297,78 +263,117 @@ public class StudentBranch extends JFrame implements ActionListener {
                     idInput.setText("");
                     for (JCheckBox cb : courseCheckBox) cb.setSelected(false);
                     JOptionPane.showMessageDialog(this, "Student Deleted Successfully!");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Delete failed.");
                 }
             }
         }
 
-        // --- SORT BUTTON ---
-        if(e.getSource() == sortBtn){
+        if (e.getSource() == sortBtn) {
             bubbleSort(studentList);
             refreshTable();
         }
         
-        // --- SEARCH BUTTON ---
-        if(e.getSource() == searchBtn){
-            String query = searchInput.getText().trim().toLowerCase();
+        // --- BINARY SEARCH ---
+        if (e.getSource() == searchBtn) {
+            String query = searchInput.getText().trim();
             if (query.isEmpty()) {
                 refreshTable();
                 return;
             }
 
-            tableModel.setRowCount(0);
-            for (Student s : studentList) {
-                if (s.getName().toLowerCase().contains(query) || s.getID().toLowerCase().contains(query)) {
-                    tableModel.addRow(new Object[]{
-                        s.getID(),
-                        s.getName(),
-                        s.getEnrolledCourses().size(),
-                        "0.0"
-                    });
-                }
+            // 1. Binary Search requires a sorted list
+            bubbleSort(studentList);
+
+            // 2. Search by Name first, then by ID
+            int foundIndex = binarySearchByName(studentList, query);
+            if (foundIndex == -1) {
+                foundIndex = binarySearchById(studentList, query);
+            }
+
+            // 3. Render result
+            if (foundIndex != -1) {
+                Student s = studentList.get(foundIndex);
+                tableModel.setRowCount(0);
+                String gwaDisplay = (s.getGwa() > 0.0) ? String.format("%.2f", s.getGwa()) : "N/A";
+                tableModel.addRow(new Object[]{s.getID(), s.getName(), s.getEnrolledCourses().size(), gwaDisplay});
+                JOptionPane.showMessageDialog(this, "Student found using Binary Search at sorted position [" + foundIndex + "]!");
+            } else {
+                JOptionPane.showMessageDialog(this, "No student found matching query (Binary Search).");
+                refreshTable();
             }
         }
 
-        // --- NAVIGATION BUTTONS ---
-        if(e.getSource() == courses){
+        if (e.getSource() == courses) {
             new CourseBranch().setVisible(true);
             this.dispose();
         }
-        if(e.getSource() == grades){
+        if (e.getSource() == grades) {
             new GradesBranch().setVisible(true);
             this.dispose();
         }
-        if(e.getSource() == attendance){
+        if (e.getSource() == attendance) {
             new AttendanceBranch().setVisible(true);
             this.dispose();
         }
-        if(e.getSource() == report){
+        if (e.getSource() == report) {
             new ReportBranch().setVisible(true);
+            this.dispose();
+        }
+        if (e.getSource() == transcript) {
+            new TranscriptBranch().setVisible(true);
             this.dispose();
         }
     }
 
-    public void bubbleSort(ArrayList<Student> studentList){
-        for(int i = 0; i < studentList.size() - 1; i++){
-            for(int j = 0; j < studentList.size() - i - 1; j++){
-                if(studentList.get(j).getName().compareToIgnoreCase(studentList.get(j + 1).getName()) > 0){
-                    Student temp = studentList.get(j);
-                    studentList.set(j, studentList.get(j + 1));
-                    studentList.set(j + 1, temp);
+    // ==========================================
+    // MANUAL BINARY SEARCH METHODS
+    // ==========================================
+    public int binarySearchByName(ArrayList<Student> list, String target) {
+        int low = 0;
+        int high = list.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int cmp = list.get(mid).getName().compareToIgnoreCase(target);
+            if (cmp == 0) return mid;
+            if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
+    public int binarySearchById(ArrayList<Student> list, String target) {
+        int low = 0;
+        int high = list.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int cmp = list.get(mid).getID().compareToIgnoreCase(target);
+            if (cmp == 0) return mid;
+            if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
+    public void bubbleSort(ArrayList<Student> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = 0; j < list.size() - i - 1; j++) {
+                if (list.get(j).getName().compareToIgnoreCase(list.get(j + 1).getName()) > 0) {
+                    Student temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
                 }
             }
         }
     }
 
-    public void refreshTable(){
+    public void refreshTable() {
         tableModel.setRowCount(0);
-        for(Student list : studentList){
+        for (Student list : studentList) {
+            String gwaDisplay = (list.getGwa() > 0.0) ? String.format("%.2f", list.getGwa()) : "N/A";
             tableModel.addRow(new Object[] {
                 list.getID(), 
                 list.getName(), 
                 list.getEnrolledCourses() != null ? list.getEnrolledCourses().size() : 0, 
-                "0.0"
+                gwaDisplay
             });
         }
     }
