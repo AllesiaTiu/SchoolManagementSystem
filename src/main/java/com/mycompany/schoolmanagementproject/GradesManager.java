@@ -1,85 +1,44 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.mycompany.schoolmanagementproject;
 
-
-/**
- *
- * @author Angel Shane
- */
 import java.util.ArrayList;
 import java.util.List;
 
 public class GradesManager {
-    // In-memory storage (replace or sync with DB/File if your project uses one)
-    private List<Grades> gradeList = new ArrayList<>();
+    
+    private GradesDAO gradesDAO;
 
-    // Add a new grade (enforces duplicate prevention)
+    public GradesManager() {
+        this.gradesDAO = new GradesDAO();
+    }
+
+    // Add or update grade directly into MySQL
     public boolean addGrade(Grades grade) {
-        if (gradeExists(grade.getStudentId(), grade.getCourseId())) {
-            return false; // Duplicate exists
-        }
-        gradeList.add(grade);
-        return true;
+        return gradesDAO.saveOrUpdateGrade(grade);
     }
 
-    // Update an existing grade
-    public boolean updateGrade(String studentId, String courseId, double newScore) {
-        for (Grades g : gradeList) {
-            if (g.getStudentId().equalsIgnoreCase(studentId) && 
-                g.getCourseId().equalsIgnoreCase(courseId)) {
-                g.setScore(newScore);
-                return true;
-            }
-        }
-        return false;
+    public boolean updateGrade(String studentId, String courseName, double newScore) {
+        return gradesDAO.saveOrUpdateGrade(new Grades(studentId, courseName, newScore));
     }
 
-    // Delete a grade
-    public boolean deleteGrade(String studentId, String courseId) {
-        return gradeList.removeIf(g -> 
-            g.getStudentId().equalsIgnoreCase(studentId) && 
-            g.getCourseId().equalsIgnoreCase(courseId));
+    public boolean deleteGrade(String studentId, String courseName) {
+        return gradesDAO.deleteGrade(studentId, courseName);
     }
 
-    // Lookup: Filter grades by Student ID (Used by UI & TranscriptBranch)
+    public boolean deleteAllGradesForStudent(String studentId) {
+        return gradesDAO.deleteAllGradesForStudent(studentId);
+    }
+
     public List<Grades> getGradesByStudentId(String studentId) {
-        List<Grades> result = new ArrayList<>();
-        for (Grades g : gradeList) {
-            if (g.getStudentId().equalsIgnoreCase(studentId)) {
-                result.add(g);
-            }
-        }
-        return result;
+        return gradesDAO.getGradesByStudentId(studentId);
     }
 
-    // Lookup: Filter grades by Course ID (Used by Reports)
-    public List<Grades> getGradesByCourseId(String courseId) {
-        List<Grades> result = new ArrayList<>();
-        for (Grades g : gradeList) {
-            if (g.getCourseId().equalsIgnoreCase(courseId)) {
-                result.add(g);
-            }
-        }
-        return result;
+    public List<Grades> getAllGrades() {
+        return gradesDAO.selectAllGrades();
     }
 
-    // Check duplicate
-    public boolean gradeExists(String studentId, String courseId) {
-        for (Grades g : gradeList) {
-            if (g.getStudentId().equalsIgnoreCase(studentId) && 
-                g.getCourseId().equalsIgnoreCase(courseId)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Calculate General Weighted Average (Simple or Weighted)
+    // Calculate General Weighted Average & save it to students table!
     public double calculateGWA(String studentId) {
-        List<Grades> studentGrades = getGradesByStudentId(studentId);
+        List<Grades> studentGrades = gradesDAO.getGradesByStudentId(studentId);
         if (studentGrades.isEmpty()) {
             return 0.0;
         }
@@ -88,11 +47,10 @@ public class GradesManager {
         for (Grades g : studentGrades) {
             totalScore += g.getScore();
         }
-        return totalScore / studentGrades.size();
-    }
-
-    public List<Grades> getAllGrades() {
-        return new ArrayList<>(gradeList);
+        double avg = totalScore / studentGrades.size();
+        
+        // Sync to students table in MySQL
+        gradesDAO.updateStudentGWA(studentId, avg);
+        return avg;
     }
 }
-
