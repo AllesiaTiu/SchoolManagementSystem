@@ -5,36 +5,33 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.List;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
 public class CourseBranch extends JFrame implements ActionListener {
     
     private CourseManager courseManager;
+    private ArrayList<Course> courseList; // Explicit ArrayList
     
-    // Navigation Buttons
     private JButton students, courses, grades, transcript, report, attendance;
-    
-    // Input Panel Elements
     private JPanel panelInputs, panelTitle, panelEnr;
     private JLabel titleCM, courseID, courseName, enrllStud, noStudenr;
     private JTextField cID_txt, cNM_txt;
     private JButton addBtn, updBtn, delBtn;
     
-    // Sort & Search Panel Elements
     private JPanel panelSort, pinkSort;
     private JLabel sortC, srchLbl;
     private JTextField inputCourse;
     private JButton sortBtn, srch2Btn;
     
-    // Table Elements
     private JTable table;
     private DefaultTableModel tblM;
     private JScrollPane scroll;
     
     public CourseBranch() {
         courseManager = new CourseManager();
+        courseList = new ArrayList<>();
         
         setTitle("School Management System");
         setSize(1000, 700);
@@ -42,7 +39,6 @@ public class CourseBranch extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setLayout(null);
         
-        // --- 1. Navigation Sidebar Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         students.addActionListener(this);
@@ -60,17 +56,19 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         transcript = new JButton("Transcript");
         transcript.setBounds(20, 210, 150, 50);
+        transcript.addActionListener(this);
         add(transcript);
         
         report = new JButton("Report");
         report.setBounds(20, 270, 150, 50);
+        report.addActionListener(this);
         add(report);
         
         attendance = new JButton("Attendance");
         attendance.setBounds(20, 330, 150, 50);
+        attendance.addActionListener(this);
         add(attendance);
         
-        // --- 2. Course Input Panel ---
         panelInputs = new JPanel();
         panelInputs.setBackground(Color.LIGHT_GRAY);
         panelInputs.setBounds(180, 30, 600, 250);
@@ -133,7 +131,6 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         add(panelInputs);
         
-        // --- 3. Search & Sort Panel ---
         panelSort = new JPanel();
         panelSort.setBackground(Color.LIGHT_GRAY);
         panelSort.setBounds(790, 30, 200, 250);
@@ -169,14 +166,12 @@ public class CourseBranch extends JFrame implements ActionListener {
         
         add(panelSort);
         
-        // --- 4. Table Setup ---
         tblM = new DefaultTableModel();
         tblM.addColumn("Course ID");
         tblM.addColumn("Course Name");
         tblM.addColumn("Enrolled Students");
         
         table = new JTable(tblM);
-        
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -193,12 +188,11 @@ public class CourseBranch extends JFrame implements ActionListener {
         scroll.setBounds(180, 290, 700, 200);
         add(scroll);
 
-        // Load existing courses from MySQL on launch
-        refreshTable(courseManager.getAllCourses());
+        courseList = courseManager.getAllCourses();
+        refreshTable(courseList);
     }
     
-    // Renders table rows with LIVE enrolled count from DB
-    private void refreshTable(List<Course> listToDisplay) {
+    private void refreshTable(ArrayList<Course> listToDisplay) {
         tblM.setRowCount(0);
         for (Course c : listToDisplay) {
             int enrolled = courseManager.getEnrolledCount(c.getcName());
@@ -206,10 +200,24 @@ public class CourseBranch extends JFrame implements ActionListener {
         }
     }
     
+    // ==========================================
+    // MANUAL BINARY SEARCH FOR COURSES
+    // ==========================================
+    public int binarySearchCourse(ArrayList<Course> list, String target) {
+        int low = 0;
+        int high = list.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int cmp = list.get(mid).getcName().compareToIgnoreCase(target);
+            if (cmp == 0) return mid;
+            if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {
-        
-        // --- ADD BUTTON ---
         if (e.getSource() == addBtn) {
             String id = cID_txt.getText().trim();
             String name = cNM_txt.getText().trim();
@@ -225,18 +233,16 @@ public class CourseBranch extends JFrame implements ActionListener {
                 return;
             }
             
-            refreshTable(courseManager.getAllCourses());
+            courseList = courseManager.getAllCourses();
+            refreshTable(courseList);
             cID_txt.setText("");
             cNM_txt.setText("");
-            cID_txt.requestFocus();
             JOptionPane.showMessageDialog(this, "Course added successfully to database!");
         } 
-        
-        // --- UPDATE BUTTON ---
         else if (e.getSource() == updBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a course from the table to update.", "Selection Error", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Please select a course from the table to update.");
                 return;
             }
             
@@ -244,62 +250,57 @@ public class CourseBranch extends JFrame implements ActionListener {
             String newId = cID_txt.getText().trim();
             String newName = cNM_txt.getText().trim();
             
-            if (newId.isEmpty() || newName.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please fill in both Course ID and Course Name.", "Input Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            
-            boolean updated = courseManager.updateCourse(oldId, newId, newName);
-            if (updated) {
-                refreshTable(courseManager.getAllCourses());
+            if (courseManager.updateCourse(oldId, newId, newName)) {
+                courseList = courseManager.getAllCourses();
+                refreshTable(courseList);
                 cID_txt.setText("");
                 cNM_txt.setText("");
                 JOptionPane.showMessageDialog(this, "Course updated successfully!");
-            } else {
-                JOptionPane.showMessageDialog(this, "Update failed. ID might already exist.", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
-        
-        // --- DELETE BUTTON ---
         else if (e.getSource() == delBtn) {
             int selectedRow = table.getSelectedRow();
-            if (selectedRow == -1) {
-                JOptionPane.showMessageDialog(this, "Please select a course to delete.", "Selection Error", JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            
-            String id = tblM.getValueAt(selectedRow, 0).toString();
-            
-            int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this course?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
-            
-            if (confirm == JOptionPane.YES_OPTION) {
-                courseManager.deleteCourse(id);
-                refreshTable(courseManager.getAllCourses());
-                cID_txt.setText("");
-                cNM_txt.setText("");
-                JOptionPane.showMessageDialog(this, "Course deleted successfully!");
+            if (selectedRow != -1) {
+                String id = tblM.getValueAt(selectedRow, 0).toString();
+                if (JOptionPane.showConfirmDialog(this, "Delete this course?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    courseManager.deleteCourse(id);
+                    courseList = courseManager.getAllCourses();
+                    refreshTable(courseList);
+                    cID_txt.setText("");
+                    cNM_txt.setText("");
+                }
             }
         }
-        
-        // --- SEARCH BUTTON ---
+        // --- SEARCH VIA BINARY SEARCH ---
         else if (e.getSource() == srch2Btn) {
             String query = inputCourse.getText().trim();
             if (query.isEmpty()) {
                 refreshTable(courseManager.getAllCourses());
+                return;
+            }
+
+            // 1. Sort the ArrayList before binary searching
+            courseList = courseManager.getAllCourses();
+            courseManager.sortCoursesByName(courseList);
+
+            // 2. Perform Binary Search
+            int foundIdx = binarySearchCourse(courseList, query);
+
+            if (foundIdx != -1) {
+                ArrayList<Course> singleMatch = new ArrayList<>();
+                singleMatch.add(courseList.get(foundIdx));
+                refreshTable(singleMatch);
+                JOptionPane.showMessageDialog(this, "Course found using Binary Search at sorted position [" + foundIdx + "]!");
             } else {
-                refreshTable(courseManager.searchCourses(query));
+                JOptionPane.showMessageDialog(this, "Course not found (Binary Search requires exact course name).");
+                refreshTable(courseManager.getAllCourses());
             }
         }
-        
-        // --- SORT BUTTON ---
         else if (e.getSource() == sortBtn) {
-            refreshTable(courseManager.sortCByName());
+            courseList = courseManager.getAllCourses();
+            courseManager.sortCoursesByName(courseList);
+            refreshTable(courseList);
             JOptionPane.showMessageDialog(this, "Courses sorted alphabetically!");
-        }
-        
-        // --- NAVIGATION BUTTONS ---
-        else if (e.getSource() == courses) {
-            // Already inside CourseBranch
         }
         else if (e.getSource() == grades) {
             new GradesBranch().setVisible(true);
@@ -307,6 +308,18 @@ public class CourseBranch extends JFrame implements ActionListener {
         }
         else if (e.getSource() == students) {
             new StudentBranch().setVisible(true);
+            this.dispose();
+        }
+        else if (e.getSource() == attendance) {
+            new AttendanceBranch().setVisible(true);
+            this.dispose();
+        }
+        else if (e.getSource() == report) {
+            new ReportBranch().setVisible(true);
+            this.dispose();
+        }
+        else if (e.getSource() == transcript) {
+            new TranscriptBranch().setVisible(true);
             this.dispose();
         }
     }

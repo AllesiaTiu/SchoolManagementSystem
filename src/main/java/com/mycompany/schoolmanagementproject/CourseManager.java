@@ -1,6 +1,6 @@
 package com.mycompany.schoolmanagementproject;
 
-import java.util.*;
+import java.util.ArrayList;
 
 public class CourseManager {
     private CourseDAO courseDAO;
@@ -15,14 +15,14 @@ public class CourseManager {
 
     public boolean addCourse(Course course) {
         if (courseDAO.courseExists(course.getcID())) {
-            return false; // Duplicate
+            return false;
         }
         return courseDAO.insertCourse(course);
     }
 
     public boolean updateCourse(String oldId, String newId, String newName) {
         if (!oldId.equalsIgnoreCase(newId) && courseDAO.courseExists(newId)) {
-            return false; // New ID conflicts with an existing one
+            return false;
         }
         return courseDAO.updateCourse(oldId, newId, newName);
     }
@@ -31,31 +31,24 @@ public class CourseManager {
         return courseDAO.deleteCourse(cID);
     }
 
-    public List<Course> getAllCourses() {
-        return courseDAO.selectAllCourses();
+    // Returns ArrayList<Course>
+    public ArrayList<Course> getAllCourses() {
+        return new ArrayList<>(courseDAO.selectAllCourses());
     }
 
-    public List<Course> searchCourses(String query) {
-        List<Course> all = courseDAO.selectAllCourses();
-        List<Course> results = new ArrayList<>();
-        String lowerQuery = query.toLowerCase().trim();
-
-        for (Course c : all) {
-            if (c.getcID().toLowerCase().contains(lowerQuery) || 
-                c.getcName().toLowerCase().contains(lowerQuery)) {
-                results.add(c);
+    // Bubble Sort on ArrayList<Course>
+    public void sortCoursesByName(ArrayList<Course> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = 0; j < list.size() - i - 1; j++) {
+                if (list.get(j).getcName().compareToIgnoreCase(list.get(j + 1).getcName()) > 0) {
+                    Course temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
+                }
             }
         }
-        return results;
     }
 
-    public List<Course> sortCByName() {
-        List<Course> all = courseDAO.selectAllCourses();
-        all.sort(Comparator.comparing(Course::getcName, String.CASE_INSENSITIVE_ORDER));
-        return all;
-    }
-
-    // Get live enrolled count from DB
     public int getEnrolledCount(String courseName) {
         return courseDAO.getEnrolledCount(courseName);
     }
