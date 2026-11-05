@@ -58,13 +58,6 @@ public class StudentBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
         
-        studentId = new JLabel("Student ID: ");
-        studentId.setBounds(30, 30, 100, 30);
-        
-        idInput = new JTextField();
-        idInput.setBounds(140, 35, 250, 20);
-        idInput.setEditable(false);
-        
         studentName = new JLabel("Name:");
         studentName.setBounds(30, 60, 100, 30);
         
@@ -117,8 +110,6 @@ public class StudentBranch extends JFrame implements ActionListener {
         panelInputs.setBounds(180, 30, 600, 300);
         panelInputs.setLayout(null);
         panelInputs.add(panelTitle);
-        panelInputs.add(studentId);
-        panelInputs.add(idInput);
         panelInputs.add(studentName);
         panelInputs.add(nameInput);
         panelInputs.add(studentCourse);
