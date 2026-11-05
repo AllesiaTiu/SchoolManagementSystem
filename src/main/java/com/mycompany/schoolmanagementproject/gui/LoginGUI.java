@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.gui;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.AdminDAO;
+import com.mycompany.schoolmanagementproject.gui.StudentBranch;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;

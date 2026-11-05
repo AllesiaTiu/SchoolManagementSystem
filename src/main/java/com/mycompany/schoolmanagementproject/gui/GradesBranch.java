@@ -1,5 +1,10 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.gui;
 
+import com.mycompany.schoolmanagementproject.gui.CourseBranch;
+import com.mycompany.schoolmanagementproject.gui.StudentBranch;
+import com.mycompany.schoolmanagementproject.manager.GradesManager;
+import com.mycompany.schoolmanagementproject.manager.StudentManager;
+import com.mycompany.schoolmanagementproject.model.Grades;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

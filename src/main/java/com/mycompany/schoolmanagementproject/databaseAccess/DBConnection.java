@@ -1,4 +1,4 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.databaseAccess;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

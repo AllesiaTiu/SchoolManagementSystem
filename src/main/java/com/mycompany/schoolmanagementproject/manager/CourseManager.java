@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.manager;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.CourseDAO;
+import com.mycompany.schoolmanagementproject.model.Course;
 import java.util.ArrayList;
 
 public class CourseManager {

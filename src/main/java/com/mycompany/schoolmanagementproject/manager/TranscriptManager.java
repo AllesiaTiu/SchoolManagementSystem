@@ -1,5 +1,8 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.manager;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.TranscriptDAO;
+import com.mycompany.schoolmanagementproject.model.TranscriptRecord;
+import com.mycompany.schoolmanagementproject.model.Student;
 import java.util.ArrayList;
 
 public class TranscriptManager {

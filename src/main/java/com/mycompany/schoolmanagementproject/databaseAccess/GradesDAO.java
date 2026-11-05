@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.databaseAccess;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.DBConnection;
+import com.mycompany.schoolmanagementproject.model.Grades;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

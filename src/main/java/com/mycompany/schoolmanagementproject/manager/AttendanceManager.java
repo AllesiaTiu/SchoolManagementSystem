@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.manager;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.AttendanceDAO;
+import com.mycompany.schoolmanagementproject.model.AttendanceRecord;
 import java.util.ArrayList;
 
 public class AttendanceManager {

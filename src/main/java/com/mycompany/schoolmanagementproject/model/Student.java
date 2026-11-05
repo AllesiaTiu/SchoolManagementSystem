@@ -1,4 +1,4 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.model;
 
 import java.util.ArrayList;
 import java.util.Random;

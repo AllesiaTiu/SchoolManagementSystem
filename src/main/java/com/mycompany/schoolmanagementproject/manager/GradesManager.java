@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.manager;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.GradesDAO;
+import com.mycompany.schoolmanagementproject.model.Grades;
 import java.util.ArrayList;
 
 public class GradesManager {

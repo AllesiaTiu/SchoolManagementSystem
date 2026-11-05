@@ -1,5 +1,6 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.databaseAccess;
 
+import com.mycompany.schoolmanagementproject.model.Course;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

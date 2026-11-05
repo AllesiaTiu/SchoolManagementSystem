@@ -1,5 +1,14 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.gui;
 
+import com.mycompany.schoolmanagementproject.gui.ReportBranch;
+import com.mycompany.schoolmanagementproject.gui.AttendanceBranch;
+import com.mycompany.schoolmanagementproject.gui.GradesBranch;
+import com.mycompany.schoolmanagementproject.gui.CourseBranch;
+import com.mycompany.schoolmanagementproject.gui.StudentBranch;
+import com.mycompany.schoolmanagementproject.manager.TranscriptManager;
+import com.mycompany.schoolmanagementproject.manager.StudentManager;
+import com.mycompany.schoolmanagementproject.model.TranscriptRecord;
+import com.mycompany.schoolmanagementproject.model.Student;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;

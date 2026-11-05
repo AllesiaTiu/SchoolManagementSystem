@@ -1,4 +1,4 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.model;
 
 public class StudentReport {
     private String studentId;

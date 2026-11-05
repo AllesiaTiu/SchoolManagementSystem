@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.databaseAccess;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.DBConnection;
+import com.mycompany.schoolmanagementproject.model.StudentReport;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

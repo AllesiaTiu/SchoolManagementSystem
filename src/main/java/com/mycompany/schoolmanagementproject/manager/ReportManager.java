@@ -1,5 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.manager;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.ReportDAO;
+import com.mycompany.schoolmanagementproject.model.StudentReport;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
