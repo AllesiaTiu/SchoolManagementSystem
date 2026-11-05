@@ -164,6 +164,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         add(scrollPane);
 
 
+        //add action listeners
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
