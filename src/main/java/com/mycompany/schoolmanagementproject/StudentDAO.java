@@ -19,7 +19,7 @@ public class StudentDAO {
             try (PreparedStatement psStudent = conn.prepareStatement(sqlStudent)) {
                 psStudent.setString(1, student.getID());
                 psStudent.setString(2, student.getName());
-                psStudent.setDouble(3, 0.0);
+                psStudent.setDouble(3, student.getGwa());
                 psStudent.executeUpdate();
             }
 
@@ -59,10 +59,10 @@ public class StudentDAO {
         }
     }
 
-    // 2. GET ALL Students from database
+    // 2. GET ALL Students from database (NOW INCLUDES GWA!)
     public ArrayList<Student> selectAllStudents() {
         ArrayList<Student> list = new ArrayList<>();
-        String sql = "SELECT student_id, name FROM students";
+        String sql = "SELECT student_id, name, gwa FROM students";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -71,9 +71,9 @@ public class StudentDAO {
             while (rs.next()) {
                 String id = rs.getString("student_id");
                 String name = rs.getString("name");
+                double gwa = rs.getDouble("gwa");
                 
-                Student s = new Student(id, name);
-                // Attach the enrolled courses for this student
+                Student s = new Student(id, name, gwa);
                 s.setEnrolledCourses(selectCoursesByStudentId(id));
                 list.add(s);
             }

@@ -51,6 +51,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         setTitle("School Management System");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
         setLayout(null);
         
         students = new JButton("Students");
@@ -82,7 +83,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         
         idInput = new JTextField();
         idInput.setBounds(140, 35, 250, 20);
-        idInput.setEditable(false); // Prevents users from manually breaking the generated ID
+        idInput.setEditable(false);
         
         studentName = new JLabel("Name:");
         studentName.setBounds(30, 60, 100, 30);
@@ -174,7 +175,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 370, 700, 200);
         add(scrollPane);
 
-        // Click row in table to populate textboxes AND highlight enrolled courses!
+        // Click row in table to populate textboxes AND highlight enrolled courses
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -184,7 +185,6 @@ public class StudentBranch extends JFrame implements ActionListener {
                     idInput.setText(selectedId);
                     nameInput.setText(tableModel.getValueAt(row, 1).toString());
 
-                    // Check/uncheck courses according to this student's enrollment
                     for (Student s : studentList) {
                         if (s.getID().equals(selectedId)) {
                             for (JCheckBox cb : courseCheckBox) {
@@ -206,7 +206,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         addBtn.addActionListener(this);
         updBtn.addActionListener(this);
         deleteBtn.addActionListener(this);
-        searchBtn.addActionListener(this); // <-- ADDED: was missing!
+        searchBtn.addActionListener(this);
         sortBtn.addActionListener(this);
 
         // Load existing students from DB on startup
@@ -214,6 +214,9 @@ public class StudentBranch extends JFrame implements ActionListener {
         refreshTable();
     }
 
+    // ========================================================
+    // actionPerformed METHOD (Directly after Constructor)
+    // ========================================================
     @Override
     public void actionPerformed(ActionEvent e) {
         String nameText = nameInput.getText().trim();
@@ -320,11 +323,15 @@ public class StudentBranch extends JFrame implements ActionListener {
             tableModel.setRowCount(0);
             for (Student s : studentList) {
                 if (s.getName().toLowerCase().contains(query) || s.getID().toLowerCase().contains(query)) {
+                    String gwaDisplay = (s.getGwa() > 0.0) 
+                            ? String.format("%.2f", s.getGwa()) 
+                            : "N/A";
+                    
                     tableModel.addRow(new Object[]{
                         s.getID(),
                         s.getName(),
                         s.getEnrolledCourses().size(),
-                        "0.0"
+                        gwaDisplay
                     });
                 }
             }
@@ -349,6 +356,9 @@ public class StudentBranch extends JFrame implements ActionListener {
         }
     }
 
+    // ========================================================
+    // OTHER HELPER METHODS
+    // ========================================================
     public void bubbleSort(ArrayList<Student> studentList){
         for(int i = 0; i < studentList.size() - 1; i++){
             for(int j = 0; j < studentList.size() - i - 1; j++){
@@ -364,11 +374,16 @@ public class StudentBranch extends JFrame implements ActionListener {
     public void refreshTable(){
         tableModel.setRowCount(0);
         for(Student list : studentList){
+            // Displays actual GWA from DB or "N/A" if it has not been calculated yet
+            String gwaDisplay = (list.getGwa() > 0.0) 
+                    ? String.format("%.2f", list.getGwa()) 
+                    : "N/A";
+
             tableModel.addRow(new Object[] {
                 list.getID(), 
                 list.getName(), 
                 list.getEnrolledCourses() != null ? list.getEnrolledCourses().size() : 0, 
-                "0.0"
+                gwaDisplay
             });
         }
     }
