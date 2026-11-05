@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class TranscriptDAO {
 
-    // Pulls all recorded subjects, course codes, and grades for a specific student ID
+
     public ArrayList<TranscriptRecord> getTranscriptByStudentId(String studentId) {
         ArrayList<TranscriptRecord> list = new ArrayList<>();
         
@@ -29,11 +29,11 @@ public class TranscriptDAO {
                 while (rs.next()) {
                     String code = rs.getString("course_id");
                     if (code == null || code.trim().isEmpty()) {
-                        code = "IT" + (100 + count); // Fallback code if unassigned
+                        code = "IT" + (100 + count); 
                     }
                     String title = rs.getString("course_name");
                     double score = rs.getDouble("score");
-                    int defaultUnits = 3; // Standard 3 units per subject
+                    int defaultUnits = 3; 
 
                     list.add(new TranscriptRecord(count++, code, title, defaultUnits, score));
                 }

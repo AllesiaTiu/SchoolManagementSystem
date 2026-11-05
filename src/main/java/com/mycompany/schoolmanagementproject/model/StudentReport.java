@@ -13,7 +13,7 @@ public class StudentReport {
         this.program = program;
         this.gwa = gwa;
         
-        // Automated status evaluation rule (Standard college scale)
+       
         if (gwa <= 0.0) {
             this.status = "No Grade";
         } else if (gwa >= 90.0 || (gwa <= 1.75 && gwa >= 1.0)) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 public class CourseDAO {
 
-    // 1. ADD COURSE
+
     public boolean insertCourse(Course course) {
         String sql = "INSERT INTO courses (course_id, course_name) VALUES (?, ?)";
         try (Connection conn = DBConnection.getConnection();
@@ -21,7 +21,7 @@ public class CourseDAO {
         }
     }
 
-    // 2. GET ALL COURSES FROM DATABASE
+    
     public List<Course> selectAllCourses() {
         List<Course> list = new ArrayList<>();
         String sql = "SELECT * FROM courses";
@@ -39,7 +39,7 @@ public class CourseDAO {
         return list;
     }
 
-    // 3. UPDATE COURSE (Both ID and Name)
+
     public boolean updateCourse(String oldId, String newId, String newName) {
         String sql = "UPDATE courses SET course_id = ?, course_name = ? WHERE course_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -54,7 +54,7 @@ public class CourseDAO {
         }
     }
 
-    // 4. DELETE COURSE
+
     public boolean deleteCourse(String cID) {
         String sql = "DELETE FROM courses WHERE course_id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -67,7 +67,7 @@ public class CourseDAO {
         }
     }
 
-    // 5. CHECK IF COURSE EXISTS
+
     public boolean courseExists(String cID) {
         String sql = "SELECT 1 FROM courses WHERE LOWER(course_id) = LOWER(?)";
         try (Connection conn = DBConnection.getConnection();
@@ -82,7 +82,7 @@ public class CourseDAO {
         }
     }
 
-    // 6. COUNT HOW MANY STUDENTS ENROLLED IN A GIVEN COURSE
+ 
     public int getEnrolledCount(String courseName) {
         String sql = "SELECT COUNT(*) AS total FROM enrollments WHERE LOWER(course_name) = LOWER(?)";
         try (Connection conn = DBConnection.getConnection();

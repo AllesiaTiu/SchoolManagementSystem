@@ -9,20 +9,20 @@ import java.util.ArrayList;
 public class ReportManager {
 
     private ReportDAO reportDAO;
-    private ArrayList<StudentReport> reportList; // Explicit ArrayList storage
+    private ArrayList<StudentReport> reportList; 
 
     public ReportManager() {
         this.reportDAO = new ReportDAO();
         this.reportList = new ArrayList<>();
     }
 
-    // Load fresh reports from database
+    
     public ArrayList<StudentReport> getAllReports() {
         this.reportList = reportDAO.selectAllReports();
         return this.reportList;
     }
 
-    // Filter reports by Academic Status
+  
     public ArrayList<StudentReport> filterByStatus(String statusFilter) {
         ArrayList<StudentReport> all = getAllReports();
         if (statusFilter == null || statusFilter.equalsIgnoreCase("All")) {
@@ -38,8 +38,6 @@ public class ReportManager {
         return filtered;
     }
 
-    // Manual Bubble Sort on ArrayList<StudentReport> by Student Name
-    // (Crucial prerequisite for Binary Search)
     public void sortReportsByName(ArrayList<StudentReport> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - i - 1; j++) {
@@ -52,7 +50,7 @@ public class ReportManager {
         }
     }
 
-    // Manual Binary Search algorithm (O(log n)) by Student Name
+    
     public int binarySearchByName(ArrayList<StudentReport> list, String targetName) {
         int low = 0;
         int high = list.size() - 1;
@@ -62,18 +60,18 @@ public class ReportManager {
             int cmp = list.get(mid).getName().compareToIgnoreCase(targetName);
 
             if (cmp == 0) {
-                return mid; // Match found
+                return mid; 
             }
             if (cmp < 0) {
-                low = mid + 1; // Target is in right half
+                low = mid + 1; 
             } else {
-                high = mid - 1; // Target is in left half
+                high = mid - 1; 
             }
         }
-        return -1; // Not found
+        return -1; 
     }
 
-    // Export current report records to a downloadable CSV file
+    
     public boolean exportToCSV(String filePath, ArrayList<StudentReport> reports) {
         try (FileWriter writer = new FileWriter(filePath)) {
             writer.write("Student ID,Name,Program,GWA,Status\n");

@@ -17,7 +17,7 @@ import javax.swing.table.DefaultTableModel;
 public class GradesBranch extends JFrame implements ActionListener {
     
     GradesManager gradesManager = new GradesManager();
-    ArrayList<Grades> gradesList; // Explicit ArrayList
+    ArrayList<Grades> gradesList;
 
     JButton students, courses, grades, transcript, report, attendance;
     JButton addBtn, updBtn, deleteBtn, computeAve;
@@ -35,13 +35,15 @@ public class GradesBranch extends JFrame implements ActionListener {
     JScrollPane scrollPane;
             
     public GradesBranch() {
-        gradesList = new ArrayList<>();
-
+       
         setTitle("School Management System - Grades Branch");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        gradesList = new ArrayList<>();
+
        
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
@@ -201,7 +203,7 @@ public class GradesBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
-        // --- BINARY SEARCH ---
+
         if (e.getSource() == searchBtn) {
             String query = searchTxt.getText().trim();
             if (query.isEmpty()) {
@@ -296,9 +298,7 @@ public class GradesBranch extends JFrame implements ActionListener {
         }
     }
 
-    // ==========================================
-    // MANUAL BINARY SEARCH FOR GRADES
-    // ==========================================
+  
     public int binarySearchGrades(ArrayList<Grades> list, String targetId) {
         int low = 0;
         int high = list.size() - 1;

@@ -9,7 +9,7 @@ public class Student {
     private double gwa;
     private ArrayList<String> enrolledCourses;
 
-    // Constructor 1: Used when creating a BRAND NEW student
+   
     public Student(String name) {
         this.name = name;
         Random random = new Random();
@@ -19,7 +19,7 @@ public class Student {
         this.enrolledCourses = new ArrayList<>();
     }
 
-    // Constructor 2: Used when loading an EXISTING student from the database
+ 
     public Student(String id, String name, double gwa) {
         this.id = id;
         this.name = name;

@@ -33,14 +33,15 @@ public class CourseBranch extends JFrame implements ActionListener {
     private JScrollPane scroll;
     
     public CourseBranch() {
-        courseManager = new CourseManager();
-        courseList = new ArrayList<>();
-        
         setTitle("School Management System");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        courseManager = new CourseManager();
+        courseList = new ArrayList<>();
+        
         
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
@@ -195,30 +196,7 @@ public class CourseBranch extends JFrame implements ActionListener {
         refreshTable(courseList);
     }
     
-    private void refreshTable(ArrayList<Course> listToDisplay) {
-        tblM.setRowCount(0);
-        for (Course c : listToDisplay) {
-            int enrolled = courseManager.getEnrolledCount(c.getcName());
-            tblM.addRow(new Object[]{c.getcID(), c.getcName(), enrolled + " Students"});
-        }
-    }
-    
-    // ==========================================
-    // MANUAL BINARY SEARCH FOR COURSES
-    // ==========================================
-    public int binarySearchCourse(ArrayList<Course> list, String target) {
-        int low = 0;
-        int high = list.size() - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int cmp = list.get(mid).getcName().compareToIgnoreCase(target);
-            if (cmp == 0) return mid;
-            if (cmp < 0) low = mid + 1;
-            else high = mid - 1;
-        }
-        return -1;
-    }
-
+   
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == addBtn) {
@@ -274,7 +252,7 @@ public class CourseBranch extends JFrame implements ActionListener {
                 }
             }
         }
-        // --- SEARCH VIA BINARY SEARCH ---
+
         else if (e.getSource() == srch2Btn) {
             String query = inputCourse.getText().trim();
             if (query.isEmpty()) {
@@ -282,11 +260,11 @@ public class CourseBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            // 1. Sort the ArrayList before binary searching
+           
             courseList = courseManager.getAllCourses();
             courseManager.sortCoursesByName(courseList);
 
-            // 2. Perform Binary Search
+         
             int foundIdx = binarySearchCourse(courseList, query);
 
             if (foundIdx != -1) {
@@ -326,4 +304,26 @@ public class CourseBranch extends JFrame implements ActionListener {
             this.dispose();
         }
     }
+     private void refreshTable(ArrayList<Course> listToDisplay) {
+        tblM.setRowCount(0);
+        for (Course c : listToDisplay) {
+            int enrolled = courseManager.getEnrolledCount(c.getcName());
+            tblM.addRow(new Object[]{c.getcID(), c.getcName(), enrolled + " Students"});
+        }
+    }
+    
+
+    public int binarySearchCourse(ArrayList<Course> list, String target) {
+        int low = 0;
+        int high = list.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int cmp = list.get(mid).getcName().compareToIgnoreCase(target);
+            if (cmp == 0) return mid;
+            if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
+
 }

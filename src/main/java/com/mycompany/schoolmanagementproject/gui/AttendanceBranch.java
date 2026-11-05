@@ -20,38 +20,38 @@ public class AttendanceBranch extends JFrame implements ActionListener {
     private AttendanceManager attendanceManager;
     private ArrayList<AttendanceRecord> attendanceList; // Explicit ArrayList storage
 
-    // Navigation buttons
+
     JButton students, courses, grades, transcript, report, attendance;
     
-    // Action buttons
+
     JButton searchBtn, saveBtn, loadStudentsBtn;
 
-    // Controls
+
     JComboBox<String> semesterBox;
     JComboBox<String> classBox;
     JComboBox<String> sectionBox;
     JTextField dateInput, searchInput;
 
-    // Panels & Labels
+
     JPanel panelTitle, panelControls;
     JLabel title;
 
-    // Table
+
     DefaultTableModel tableModel;
     JTable table;
     JScrollPane scrollPane;
 
     public AttendanceBranch() {
-        attendanceManager = new AttendanceManager();
-        attendanceList = new ArrayList<>();
-
+    
         setTitle("School Management System - Attendance");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        attendanceManager = new AttendanceManager();
+        attendanceList = new ArrayList<>();
 
-        // --- 1. Sidebar Navigation Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -76,7 +76,6 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
 
-        // --- 2. Title Banner ---
         title = new JLabel("Student Attendance Management");
         title.setBounds(20, 0, 250, 30);
         title.setFont(new Font("Arial", Font.BOLD, 14));
@@ -88,7 +87,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         panelTitle.add(title);
         add(panelTitle);
 
-        // --- 3. Controls Panel ---
+  
         panelControls = new JPanel();
         panelControls.setBounds(180, 70, 780, 95);
         panelControls.setLayout(null);
@@ -106,7 +105,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         coursesLabel.setBounds(140, 5, 70, 20);
         panelControls.add(coursesLabel);
 
-        // Dynamically load available courses from database
+     
         classBox = new JComboBox<>();
         loadDynamicCourses();
         classBox.setBounds(140, 25, 180, 25);
@@ -138,7 +137,6 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         saveBtn.addActionListener(this);
         panelControls.add(saveBtn);
 
-        // Search Bar (Binary Search)
         searchInput = new JTextField();
         searchInput.setBounds(10, 60, 200, 25);
         panelControls.add(searchInput);
@@ -150,14 +148,14 @@ public class AttendanceBranch extends JFrame implements ActionListener {
 
         add(panelControls);
 
-        // --- 4. Attendance Table ---
+ 
         String[] columns = {"Student Name", "Student ID", "Attendance Status (Present / Late / Absent)"};
         tableModel = new DefaultTableModel(columns, 0);
 
         table = new JTable(tableModel);
         table.setRowHeight(25);
 
-        // ComboBox dropdown inside the Attendance Status column
+ 
         JComboBox<String> statusCmb = new JComboBox<>(new String[]{"Present", "Late", "Absent"});
         table.getColumnModel().getColumn(2).setCellEditor(new DefaultCellEditor(statusCmb));
 
@@ -165,7 +163,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 175, 780, 470);
         add(scrollPane);
 
-        // Listeners
+
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
@@ -174,24 +172,11 @@ public class AttendanceBranch extends JFrame implements ActionListener {
         attendance.addActionListener(this);
     }
 
-    private void loadDynamicCourses() {
-        classBox.removeAllItems();
-        ArrayList<String> coursesList = StudentManager.getAvailableCourses();
-        for (String c : coursesList) {
-            classBox.addItem(c);
-        }
-    }
-
-    private void refreshTable(ArrayList<AttendanceRecord> list) {
-        tableModel.setRowCount(0);
-        for (AttendanceRecord r : list) {
-            tableModel.addRow(new Object[]{r.getStudentName(), r.getStudentId(), r.getStatus()});
-        }
-    }
+  
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Navigation Handlers
+     
         if (e.getSource() == students) {
             new StudentBranch().setVisible(true);
             this.dispose();
@@ -209,7 +194,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
-        // --- LOAD CLASS (Enrolled Students from MySQL) ---
+       
         if (e.getSource() == loadStudentsBtn) {
             if (classBox.getSelectedItem() == null) {
                 JOptionPane.showMessageDialog(this, "No courses available.");
@@ -227,14 +212,14 @@ public class AttendanceBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- SAVE ATTENDANCE TO MYSQL ---
+     
         if (e.getSource() == saveBtn) {
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this, "Table is empty. Please click 'Load Class' first.");
                 return;
             }
 
-            // Stop cell editing if user is currently typing/selecting
+
             if (table.isEditing()) {
                 table.getCellEditor().stopCellEditing();
             }
@@ -257,7 +242,7 @@ public class AttendanceBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- MANUAL BINARY SEARCH ---
+   
         if (e.getSource() == searchBtn) {
             String query = searchInput.getText().trim();
             if (query.isEmpty() || attendanceList.isEmpty()) {
@@ -265,21 +250,35 @@ public class AttendanceBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            // 1. Must sort the ArrayList before performing Binary Search
+
             attendanceManager.sortAttendanceByName(attendanceList);
             refreshTable(attendanceList);
 
-            // 2. Perform Binary Search (O(log n))
+
             int foundIndex = attendanceManager.binarySearchByName(attendanceList, query);
 
             if (foundIndex != -1) {
-                // Highlight the row in the table
+         
                 table.setRowSelectionInterval(foundIndex, foundIndex);
                 table.scrollRectToVisible(table.getCellRect(foundIndex, 0, true));
                 JOptionPane.showMessageDialog(this, "Student '" + query + "' found via Binary Search at sorted index [" + foundIndex + "]!");
             } else {
                 JOptionPane.showMessageDialog(this, "Student '" + query + "' not found in this class (Binary Search).");
             }
+        }
+    }
+      private void loadDynamicCourses() {
+        classBox.removeAllItems();
+        ArrayList<String> coursesList = StudentManager.getAvailableCourses();
+        for (String c : coursesList) {
+            classBox.addItem(c);
+        }
+    }
+
+    private void refreshTable(ArrayList<AttendanceRecord> list) {
+        tableModel.setRowCount(0);
+        for (AttendanceRecord r : list) {
+            tableModel.addRow(new Object[]{r.getStudentName(), r.getStudentId(), r.getStatus()});
         }
     }
 }

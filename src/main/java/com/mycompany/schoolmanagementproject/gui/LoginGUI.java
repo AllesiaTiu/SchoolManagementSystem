@@ -20,7 +20,6 @@ public class LoginGUI extends JFrame implements ActionListener {
     private AdminDAO adminDAO;
 
     public LoginGUI() {
-        adminDAO = new AdminDAO();
 
         setTitle("School Management System - Portal Login");
         setSize(450, 420);
@@ -28,8 +27,10 @@ public class LoginGUI extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setLayout(null);
+        
+        adminDAO = new AdminDAO();
 
-        // Header Panel (matching your theme's pink banner)
+   
         headerPanel = new JPanel();
         headerPanel.setBackground(Color.PINK);
         headerPanel.setBounds(0, 0, 450, 60);
@@ -91,7 +92,7 @@ public class LoginGUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Toggle input fields if User is selected
+       
         if (e.getSource() == roleCombo) {
             String selectedRole = roleCombo.getSelectedItem().toString();
             if (selectedRole.equals("User (Student)")) {
@@ -106,7 +107,7 @@ public class LoginGUI extends JFrame implements ActionListener {
             return;
         }
 
-        // Clear button
+      
         if (e.getSource() == clearBtn) {
             userTxt.setText("");
             passTxt.setText("");
@@ -114,11 +115,11 @@ public class LoginGUI extends JFrame implements ActionListener {
             return;
         }
 
-        // Login button
+
         if (e.getSource() == loginBtn) {
             String selectedRole = roleCombo.getSelectedItem().toString();
 
-            // Case 1: USER side (Placeholder for 50% milestone)
+           
             if (selectedRole.equals("User (Student)")) {
                 JOptionPane.showMessageDialog(this,
                         "User / Student Portal is currently under development (Phase 2).\nPlease select 'Admin' to continue.",
@@ -127,7 +128,6 @@ public class LoginGUI extends JFrame implements ActionListener {
                 return;
             }
 
-            // Case 2: ADMIN side
             String username = userTxt.getText().trim();
             String password = new String(passTxt.getPassword()).trim();
 
@@ -139,17 +139,16 @@ public class LoginGUI extends JFrame implements ActionListener {
                 return;
             }
 
-            // Authenticate with MySQL database
+         
             boolean isValid = adminDAO.validateAdmin(username, password);
 
             if (isValid) {
                 JOptionPane.showMessageDialog(this, "Login Successful! Welcome, Admin.");
                 
-                // Open StudentBranch as the initial landing page
+      
                 StudentBranch studentBranch = new StudentBranch();
                 studentBranch.setVisible(true);
                 
-                // Close login window
                 this.dispose();
             } else {
                 JOptionPane.showMessageDialog(this,
@@ -160,9 +159,5 @@ public class LoginGUI extends JFrame implements ActionListener {
         }
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new LoginGUI().setVisible(true);
-        });
-    }
+    
 }

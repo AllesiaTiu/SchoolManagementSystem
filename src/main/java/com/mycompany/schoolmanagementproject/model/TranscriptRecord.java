@@ -14,7 +14,7 @@ public class TranscriptRecord {
         this.subjectTitle = subjectTitle;
         this.units = units;
         this.grade = grade;
-        // College grading passing scale (e.g., 75+ or 1.0 - 3.0)
+       
         this.remarks = (grade >= 75.0 || (grade <= 3.0 && grade >= 1.0)) ? "Passed" : "Failed";
     }
 

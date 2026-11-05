@@ -18,7 +18,7 @@ public class AdminDAO {
             ps.setString(2, password.trim());
             
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next(); // Returns true if a match is found
+                return rs.next(); 
             }
         } catch (SQLException e) {
             System.err.println("AdminDAO Error: " + e.getMessage());

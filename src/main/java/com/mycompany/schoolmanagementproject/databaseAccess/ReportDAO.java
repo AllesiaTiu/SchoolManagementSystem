@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 public class ReportDAO {
 
-    // Fetches all student records and their current GWAs from MySQL
+  
     public ArrayList<StudentReport> selectAllReports() {
         ArrayList<StudentReport> list = new ArrayList<>();
         String sql = "SELECT student_id, name, gwa FROM students";
@@ -24,7 +24,7 @@ public class ReportDAO {
                 String name = rs.getString("name");
                 double gwa = rs.getDouble("gwa");
 
-                // Default program set to BSIT
+               
                 list.add(new StudentReport(id, name, "BSIT", gwa));
             }
         } catch (SQLException e) {

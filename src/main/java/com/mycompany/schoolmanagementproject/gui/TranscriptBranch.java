@@ -23,34 +23,30 @@ public class TranscriptBranch extends JFrame implements ActionListener {
     private ArrayList<Student> studentList; // Explicit ArrayList
     private ArrayList<TranscriptRecord> currentRecords;
 
-    // Sidebar navigation buttons
     JButton students, courses, grades, transcript, report, attendance;
     
-    // Action buttons & controls
     JTextField txtSearch;
     JButton btnSearch, btnRefresh, btnPrint;
 
-    // Display labels
     JLabel lblIdValue, lblNameValue, lblProgramValue, lblYearValue;
     JLabel lblGwaVal, lblEqVal, lblTotalUnits;
 
-    // Table
     DefaultTableModel tableModel;
     JTable table;
     JScrollPane scrollPane;
 
     public TranscriptBranch() {
-        transcriptManager = new TranscriptManager();
-        studentList = new ArrayList<>();
-        currentRecords = new ArrayList<>();
-
+       
         setTitle("School Management System - Transcript");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        transcriptManager = new TranscriptManager();
+        studentList = new ArrayList<>();
+        currentRecords = new ArrayList<>();
 
-        // --- 1. Sidebar Navigation Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -75,7 +71,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
 
-        // --- 2. Title Banner (Standard Pink Banner) ---
+       
         JLabel title = new JLabel("Official Student Transcript");
         title.setBounds(20, 0, 250, 30);
 
@@ -86,7 +82,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         panelTitle.add(title);
         add(panelTitle);
 
-        // --- 3. Search Bar ---
         JLabel lblSearch = new JLabel("Search Student ID:");
         lblSearch.setBounds(180, 70, 140, 25);
         add(lblSearch);
@@ -105,7 +100,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         add(btnRefresh);
 
-        // --- 4. Student Information Card ---
+     
         JPanel cardPanel = new JPanel();
         cardPanel.setBackground(Color.LIGHT_GRAY);
         cardPanel.setBounds(180, 105, 580, 110);
@@ -145,7 +140,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
         add(cardPanel);
 
-        // --- 5. GWA & Equivalent Card ---
+
         JPanel gwaPanel = new JPanel();
         gwaPanel.setBackground(Color.WHITE);
         gwaPanel.setBounds(770, 105, 190, 110);
@@ -174,7 +169,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
         add(gwaPanel);
 
-        // --- 6. Academic Records Table ---
+
         String[] columns = {"No.", "Subject Code", "Subject Title", "Units", "Grade", "Remarks"};
         tableModel = new DefaultTableModel(columns, 0);
 
@@ -194,7 +189,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         btnPrint.addActionListener(this);
         add(btnPrint);
 
-        // Listeners
+       
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
@@ -205,7 +200,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Sidebar Navigation Handlers
+      
         if (e.getSource() == students) {
             new StudentBranch().setVisible(true);
             this.dispose();
@@ -223,7 +218,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
-        // --- BINARY SEARCH BY STUDENT ID ---
+      
         if (e.getSource() == btnSearch) {
             String targetId = txtSearch.getText().trim();
             if (targetId.isEmpty()) {
@@ -231,29 +226,29 @@ public class TranscriptBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            // 1. Fetch student list from database
+
             studentList = StudentManager.getAllStudents();
             if (studentList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No students exist in database.");
                 return;
             }
 
-            // 2. Sort the ArrayList by ID (Binary Search requirement)
+
             transcriptManager.sortStudentsById(studentList);
 
-            // 3. Execute Binary Search (O(log n))
+      
             int foundIdx = transcriptManager.binarySearchStudentById(studentList, targetId);
 
             if (foundIdx != -1) {
                 Student s = studentList.get(foundIdx);
 
-                // Update info cards
+           
                 lblIdValue.setText(s.getID());
                 lblNameValue.setText(s.getName());
                 lblGwaVal.setText((s.getGwa() > 0.0) ? String.format("%.2f", s.getGwa()) : "N/A");
                 lblEqVal.setText(transcriptManager.getEquivalent(s.getGwa()));
 
-                // Fetch real subject grades from MySQL via DAO
+            
                 tableModel.setRowCount(0);
                 currentRecords = transcriptManager.getStudentTranscript(s.getID());
                 for (TranscriptRecord r : currentRecords) {
@@ -273,7 +268,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- CLEAR / REFRESH ---
+      
         if (e.getSource() == btnRefresh) {
             txtSearch.setText("");
             lblIdValue.setText("-");
@@ -284,7 +279,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             tableModel.setRowCount(0);
         }
 
-        // --- PRINT TRANSCRIPT ---
+      
         if (e.getSource() == btnPrint) {
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this, "No transcript record loaded to print.");

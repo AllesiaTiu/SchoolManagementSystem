@@ -10,11 +10,11 @@ import java.util.ArrayList;
 
 public class AttendanceDAO {
 
-    // 1. Fetch all students enrolled in a course to take or view attendance
+   
     public ArrayList<AttendanceRecord> getStudentsByCourse(String courseName, String date) {
         ArrayList<AttendanceRecord> list = new ArrayList<>();
         
-        // Joins students & enrollments table, checks if attendance for this date already exists
+
         String sql = "SELECT s.student_id, s.name, IFNULL(a.status, 'Present') AS current_status "
                    + "FROM enrollments e "
                    + "JOIN students s ON e.student_id = s.student_id "
@@ -47,7 +47,7 @@ public class AttendanceDAO {
         return list;
     }
 
-    // 2. Batch save attendance into MySQL (UPSERT)
+   
     public boolean saveAttendanceList(ArrayList<AttendanceRecord> records) {
         String sql = "INSERT INTO attendance (student_id, course_name, date, status) VALUES (?, ?, ?, ?) "
                    + "ON DUPLICATE KEY UPDATE status = VALUES(status)";

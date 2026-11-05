@@ -33,12 +33,12 @@ public class CourseManager {
         return courseDAO.deleteCourse(cID);
     }
 
-    // Returns ArrayList<Course>
+   
     public ArrayList<Course> getAllCourses() {
         return new ArrayList<>(courseDAO.selectAllCourses());
     }
 
-    // Bubble Sort on ArrayList<Course>
+
     public void sortCoursesByName(ArrayList<Course> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - i - 1; j++) {

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 
 public class StudentDAO {
 
-    // 1. INSERT Student and their enrolled courses
+  
     public boolean insertStudent(Student student) {
         String sqlStudent = "INSERT INTO students (student_id, name, gwa) VALUES (?, ?, ?)";
         String sqlEnrollment = "INSERT INTO enrollments (student_id, course_name) VALUES (?, ?)";
@@ -14,9 +14,9 @@ public class StudentDAO {
         Connection conn = null;
         try {
             conn = DBConnection.getConnection();
-            conn.setAutoCommit(false); // Begin transaction
+            conn.setAutoCommit(false); 
 
-            // Insert into 'students' table
+          
             try (PreparedStatement psStudent = conn.prepareStatement(sqlStudent)) {
                 psStudent.setString(1, student.getID());
                 psStudent.setString(2, student.getName());
@@ -24,7 +24,6 @@ public class StudentDAO {
                 psStudent.executeUpdate();
             }
 
-            // Insert into 'enrollments' table
             if (student.getEnrolledCourses() != null && !student.getEnrolledCourses().isEmpty()) {
                 try (PreparedStatement psEnroll = conn.prepareStatement(sqlEnrollment)) {
                     for (String courseName : student.getEnrolledCourses()) {
@@ -35,7 +34,7 @@ public class StudentDAO {
                 }
             }
 
-            conn.commit(); // Save everything
+            conn.commit(); 
             return true;
         } catch (SQLException e) {
             System.err.println("Database Insert Error: " + e.getMessage());
@@ -60,7 +59,7 @@ public class StudentDAO {
         }
     }
 
-    // 2. GET ALL Students from database (NOW INCLUDES GWA!)
+
     public ArrayList<Student> selectAllStudents() {
         ArrayList<Student> list = new ArrayList<>();
         String sql = "SELECT student_id, name, gwa FROM students";
@@ -85,7 +84,7 @@ public class StudentDAO {
         return list;
     }
 
-    // Helper: Fetch enrolled courses for one student
+
     public ArrayList<String> selectCoursesByStudentId(String studentId) {
         ArrayList<String> courses = new ArrayList<>();
         String sql = "SELECT course_name FROM enrollments WHERE student_id = ?";
@@ -105,7 +104,7 @@ public class StudentDAO {
         return courses;
     }
 
-    // 3. UPDATE Student Name
+
     public boolean updateStudentName(String studentId, String newName) {
         String sql = "UPDATE students SET name = ? WHERE student_id = ?";
 
@@ -121,7 +120,7 @@ public class StudentDAO {
         }
     }
 
-    // 4. DELETE Student
+   
     public boolean deleteStudentById(String studentId) {
         String sql = "DELETE FROM students WHERE student_id = ?";
 
@@ -136,7 +135,7 @@ public class StudentDAO {
         }
     }
 
-    // 5. GET All Available Courses (from courses table with fallback)
+
     public ArrayList<String> selectAvailableCourses() {
         ArrayList<String> courses = new ArrayList<>();
         String sql = "SELECT course_name FROM courses";
@@ -153,7 +152,7 @@ public class StudentDAO {
             e.printStackTrace();
         }
 
-        // Fallback default list if no courses in database yet
+
         if (courses.isEmpty()) {
             courses.add("Programming 3");
             courses.add("Data Structures");

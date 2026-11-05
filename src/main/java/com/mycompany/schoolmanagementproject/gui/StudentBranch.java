@@ -24,7 +24,6 @@ public class StudentBranch extends JFrame implements ActionListener {
     JTable table;
     JScrollPane scrollPane, scrollCourse;
     
-    // Explicit ArrayLists for storage
     ArrayList<Student> studentList;
     ArrayList<JCheckBox> courseCheckBox;
 
@@ -274,7 +273,7 @@ public class StudentBranch extends JFrame implements ActionListener {
             refreshTable();
         }
         
-        // --- BINARY SEARCH ---
+     
         if (e.getSource() == searchBtn) {
             String query = searchInput.getText().trim();
             if (query.isEmpty()) {
@@ -282,16 +281,15 @@ public class StudentBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            // 1. Binary Search requires a sorted list
             bubbleSort(studentList);
 
-            // 2. Search by Name first, then by ID
+    
             int foundIndex = binarySearchByName(studentList, query);
             if (foundIndex == -1) {
                 foundIndex = binarySearchById(studentList, query);
             }
 
-            // 3. Render result
+
             if (foundIndex != -1) {
                 Student s = studentList.get(foundIndex);
                 tableModel.setRowCount(0);
@@ -326,9 +324,7 @@ public class StudentBranch extends JFrame implements ActionListener {
         }
     }
 
-    // ==========================================
-    // MANUAL BINARY SEARCH METHODS
-    // ==========================================
+  
     public int binarySearchByName(ArrayList<Student> list, String target) {
         int low = 0;
         int high = list.size() - 1;

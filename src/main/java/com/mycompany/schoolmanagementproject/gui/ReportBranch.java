@@ -18,30 +18,27 @@ public class ReportBranch extends JFrame implements ActionListener {
     private ReportManager reportManager;
     private ArrayList<StudentReport> reportList; // Explicit ArrayList storage
 
-    // Navigation buttons
     JButton students, courses, grades, transcript, report, attendance;
     
-    // Action buttons
     JTextField txtSearch;
     JComboBox<String> cmbFilter;
     JButton btnFilter, btnExport, btnSearch;
     
-    // Table components
     DefaultTableModel reportModel;
     JTable reportTable;
     JScrollPane sp;
 
     public ReportBranch() {
-        reportManager = new ReportManager();
-        reportList = new ArrayList<>();
 
         setTitle("School Management System - Report Branch");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
+        
+        reportManager = new ReportManager();
+        reportList = new ArrayList<>();
 
-        // --- 1. Sidebar Navigation Buttons ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -66,7 +63,7 @@ public class ReportBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
 
-        // --- 2. Title Banner ---
+     
         JLabel reportTitle = new JLabel("Academic Performance Reports");
         reportTitle.setBounds(20, 0, 250, 30);
 
@@ -77,7 +74,6 @@ public class ReportBranch extends JFrame implements ActionListener {
         panelTitle.add(reportTitle);
         add(panelTitle);
 
-        // --- 3. Filter & Binary Search Controls ---
         JLabel lblSearch = new JLabel("Search Name:");
         lblSearch.setBounds(180, 75, 90, 25);
         add(lblSearch);
@@ -109,7 +105,6 @@ public class ReportBranch extends JFrame implements ActionListener {
         btnExport.addActionListener(this);
         add(btnExport);
 
-        // --- 4. Report Table ---
         String[] columns = {"Student ID", "Name", "Course / Program", "GPA / GWA", "Status"};
         reportModel = new DefaultTableModel(columns, 0);
 
@@ -119,7 +114,6 @@ public class ReportBranch extends JFrame implements ActionListener {
         sp.setBounds(180, 115, 780, 500);
         add(sp);
 
-        // Listeners
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
@@ -127,7 +121,6 @@ public class ReportBranch extends JFrame implements ActionListener {
         report.addActionListener(this);
         attendance.addActionListener(this);
 
-        // Initial Data Load from MySQL
         loadReportsFromDatabase();
     }
 
@@ -135,7 +128,7 @@ public class ReportBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        // Navigation Handlers
+   
         if (e.getSource() == students) {
             new StudentBranch().setVisible(true);
             this.dispose();
@@ -153,7 +146,7 @@ public class ReportBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
-        // --- BINARY SEARCH BY NAME ---
+ 
         if (e.getSource() == btnSearch) {
             String query = txtSearch.getText().trim();
             if (query.isEmpty()) {
@@ -161,11 +154,11 @@ public class ReportBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            // 1. Fetch fresh list & sort by name first (Binary Search requirement)
+         
             reportList = reportManager.getAllReports();
             reportManager.sortReportsByName(reportList);
 
-            // 2. Execute Binary Search algorithm (O(log n))
+ 
             int foundIdx = reportManager.binarySearchByName(reportList, query);
 
             if (foundIdx != -1) {
@@ -179,14 +172,14 @@ public class ReportBranch extends JFrame implements ActionListener {
             }
         }
 
-        // --- STATUS FILTER ---
+    
         if (e.getSource() == btnFilter) {
             String selectedStatus = cmbFilter.getSelectedItem().toString();
             reportList = reportManager.filterByStatus(selectedStatus);
             refreshTable(reportList);
         }
 
-        // --- EXPORT TO CSV ---
+       
         if (e.getSource() == btnExport) {
             if (reportList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No records to export.");
@@ -205,7 +198,7 @@ public class ReportBranch extends JFrame implements ActionListener {
         reportList = reportManager.getAllReports();
         refreshTable(reportList);
     }
-     //refresh
+  
     private void refreshTable(ArrayList<StudentReport> list) {
         reportModel.setRowCount(0);
         for (StudentReport r : list) {

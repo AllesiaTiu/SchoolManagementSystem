@@ -15,13 +15,13 @@ public class TranscriptManager {
         this.currentTranscript = new ArrayList<>();
     }
 
-    // Fetches live records from MySQL
+    
     public ArrayList<TranscriptRecord> getStudentTranscript(String studentId) {
         this.currentTranscript = transcriptDAO.getTranscriptByStudentId(studentId);
         return this.currentTranscript;
     }
 
-    // Sums up total units
+  
     public int calculateTotalUnits(ArrayList<TranscriptRecord> records) {
         int total = 0;
         for (TranscriptRecord r : records) {
@@ -30,7 +30,7 @@ public class TranscriptManager {
         return total;
     }
 
-    // Converts numerical GWA into official collegiate equivalent rating
+ 
     public String getEquivalent(double gwa) {
         if (gwa <= 0.0) return "N/A";
         if (gwa >= 97.0 || (gwa <= 1.00 && gwa > 0)) return "1.00 (Excellent)";
@@ -42,8 +42,7 @@ public class TranscriptManager {
         return "5.00 (Failed)";
     }
 
-    // Manual Bubble Sort on ArrayList<Student> by Student ID
-    // (Prerequisite for Binary Search!)
+   
     public void sortStudentsById(ArrayList<Student> list) {
         for (int i = 0; i < list.size() - 1; i++) {
             for (int j = 0; j < list.size() - i - 1; j++) {
@@ -56,7 +55,6 @@ public class TranscriptManager {
         }
     }
 
-    // Manual Binary Search algorithm (O(log n)) by Student ID
     public int binarySearchStudentById(ArrayList<Student> list, String targetId) {
         int low = 0;
         int high = list.size() - 1;
@@ -66,14 +64,14 @@ public class TranscriptManager {
             int cmp = list.get(mid).getID().compareToIgnoreCase(targetId);
 
             if (cmp == 0) {
-                return mid; // Match found
+                return mid; 
             }
             if (cmp < 0) {
-                low = mid + 1; // Target is in right half
+                low = mid + 1; 
             } else {
-                high = mid - 1; // Target is in left half
+                high = mid - 1; 
             }
         }
-        return -1; // Not found
+        return -1; 
     }
 }

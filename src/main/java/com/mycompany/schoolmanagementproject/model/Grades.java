@@ -4,10 +4,6 @@
  */
 package com.mycompany.schoolmanagementproject.model;
 
-/**
- *
- * @author Angel Shane
- */
 public class Grades {
   private String studentId;
   private String courseId;
