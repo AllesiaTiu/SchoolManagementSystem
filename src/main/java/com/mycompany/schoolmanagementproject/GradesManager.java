@@ -1,17 +1,14 @@
 package com.mycompany.schoolmanagementproject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class GradesManager {
-    
     private GradesDAO gradesDAO;
 
     public GradesManager() {
         this.gradesDAO = new GradesDAO();
     }
 
-    // Add or update grade directly into MySQL
     public boolean addGrade(Grades grade) {
         return gradesDAO.saveOrUpdateGrade(grade);
     }
@@ -24,32 +21,36 @@ public class GradesManager {
         return gradesDAO.deleteGrade(studentId, courseName);
     }
 
-    public boolean deleteAllGradesForStudent(String studentId) {
-        return gradesDAO.deleteAllGradesForStudent(studentId);
+    public ArrayList<Grades> getAllGrades() {
+        return new ArrayList<>(gradesDAO.selectAllGrades());
     }
 
-    public List<Grades> getGradesByStudentId(String studentId) {
-        return gradesDAO.getGradesByStudentId(studentId);
+    public ArrayList<Grades> getGradesByStudentId(String studentId) {
+        return new ArrayList<>(gradesDAO.getGradesByStudentId(studentId));
     }
 
-    public List<Grades> getAllGrades() {
-        return gradesDAO.selectAllGrades();
+    // Manual Bubble Sort on ArrayList<Grades> by Student ID
+    public void sortGradesByStudentId(ArrayList<Grades> list) {
+        for (int i = 0; i < list.size() - 1; i++) {
+            for (int j = 0; j < list.size() - i - 1; j++) {
+                if (list.get(j).getStudentId().compareToIgnoreCase(list.get(j + 1).getStudentId()) > 0) {
+                    Grades temp = list.get(j);
+                    list.set(j, list.get(j + 1));
+                    list.set(j + 1, temp);
+                }
+            }
+        }
     }
 
-    // Calculate General Weighted Average & save it to students table!
     public double calculateGWA(String studentId) {
-        List<Grades> studentGrades = gradesDAO.getGradesByStudentId(studentId);
-        if (studentGrades.isEmpty()) {
-            return 0.0;
-        }
+        ArrayList<Grades> studentGrades = getGradesByStudentId(studentId);
+        if (studentGrades.isEmpty()) return 0.0;
 
-        double totalScore = 0.0;
+        double total = 0.0;
         for (Grades g : studentGrades) {
-            totalScore += g.getScore();
+            total += g.getScore();
         }
-        double avg = totalScore / studentGrades.size();
-        
-        // Sync to students table in MySQL
+        double avg = total / studentGrades.size();
         gradesDAO.updateStudentGWA(studentId, avg);
         return avg;
     }
