@@ -1,5 +1,10 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.gui;
 
+import com.mycompany.schoolmanagementproject.databaseAccess.UserDAO;
+import com.mycompany.schoolmanagementproject.gui.LoginGUI;
+import com.mycompany.schoolmanagementproject.model.AttendanceRecord;
+import com.mycompany.schoolmanagementproject.model.Grades;
+import com.mycompany.schoolmanagementproject.model.Student;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
