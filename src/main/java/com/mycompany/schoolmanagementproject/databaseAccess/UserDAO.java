@@ -1,6 +1,7 @@
-package com.mycompany.schoolmanagementproject;
+package com.mycompany.schoolmanagementproject.databaseAccess;
 
 import com.mycompany.schoolmanagementproject.databaseAccess.DBConnection;
+import com.mycompany.schoolmanagementproject.model.AttendanceRecord;
 import com.mycompany.schoolmanagementproject.model.Grades;
 import com.mycompany.schoolmanagementproject.model.Student;
 import java.sql.Connection;
