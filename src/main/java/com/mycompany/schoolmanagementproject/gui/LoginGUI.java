@@ -1,7 +1,8 @@
 package com.mycompany.schoolmanagementproject.gui;
 
 import com.mycompany.schoolmanagementproject.databaseAccess.AdminDAO;
-import com.mycompany.schoolmanagementproject.gui.StudentBranch;
+import com.mycompany.schoolmanagementproject.databaseAccess.UserDAO;
+import com.mycompany.schoolmanagementproject.model.Student;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -18,9 +19,9 @@ public class LoginGUI extends JFrame implements ActionListener {
     private JPanel headerPanel, mainPanel;
 
     private AdminDAO adminDAO;
+    private UserDAO userDAO;
 
     public LoginGUI() {
-
         setTitle("School Management System - Portal Login");
         setSize(450, 420);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -29,8 +30,9 @@ public class LoginGUI extends JFrame implements ActionListener {
         setLayout(null);
         
         adminDAO = new AdminDAO();
+        userDAO = new UserDAO();
 
-   
+        // Header Panel
         headerPanel = new JPanel();
         headerPanel.setBackground(Color.PINK);
         headerPanel.setBounds(0, 0, 450, 60);
@@ -58,7 +60,7 @@ public class LoginGUI extends JFrame implements ActionListener {
         roleCombo.addActionListener(this);
         mainPanel.add(roleCombo);
 
-        // Username
+        // Username / Student ID
         userLbl = new JLabel("Username:");
         userLbl.setBounds(30, 75, 80, 25);
         mainPanel.add(userLbl);
@@ -92,22 +94,24 @@ public class LoginGUI extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-       
+        // Change label text when switching between Admin and Student
         if (e.getSource() == roleCombo) {
             String selectedRole = roleCombo.getSelectedItem().toString();
             if (selectedRole.equals("User (Student)")) {
-                userTxt.setText("");
-                passTxt.setText("");
-                userTxt.setEnabled(false);
-                passTxt.setEnabled(false);
+                userLbl.setText("Student ID:");
+                userTxt.setToolTipText("Enter Student ID (e.g., 2026-XXXX-BN-0)");
             } else {
-                userTxt.setEnabled(true);
-                passTxt.setEnabled(true);
+                userLbl.setText("Username:");
+                userTxt.setToolTipText("Enter admin username");
             }
+            userTxt.setText("");
+            passTxt.setText("");
+            userTxt.setEnabled(true);
+            passTxt.setEnabled(true);
             return;
         }
 
-      
+        // Clear input fields
         if (e.getSource() == clearBtn) {
             userTxt.setText("");
             passTxt.setText("");
@@ -115,49 +119,63 @@ public class LoginGUI extends JFrame implements ActionListener {
             return;
         }
 
-
+        // Handle Login button click
         if (e.getSource() == loginBtn) {
             String selectedRole = roleCombo.getSelectedItem().toString();
-
-           
-            if (selectedRole.equals("User (Student)")) {
-                JOptionPane.showMessageDialog(this,
-                        "User / Student Portal is currently under development (Phase 2).\nPlease select 'Admin' to continue.",
-                        "Notice",
-                        JOptionPane.INFORMATION_MESSAGE);
-                return;
-            }
-
             String username = userTxt.getText().trim();
             String password = new String(passTxt.getPassword()).trim();
 
             if (username.isEmpty() || password.isEmpty()) {
                 JOptionPane.showMessageDialog(this,
-                        "Please enter both Username and Password.",
+                        "Please enter both credentials.",
                         "Input Error",
                         JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
-         
-            boolean isValid = adminDAO.validateAdmin(username, password);
+            // ==========================================
+            // 1. ADMIN LOGIN
+            // ==========================================
+            if (selectedRole.equals("Admin")) {
+                boolean isValid = adminDAO.validateAdmin(username, password);
 
-            if (isValid) {
-                JOptionPane.showMessageDialog(this, "Login Successful! Welcome, Admin.");
-                
-      
-                StudentBranch studentBranch = new StudentBranch();
-                studentBranch.setVisible(true);
-                
-                this.dispose();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Invalid Username or Password.",
-                        "Login Failed",
-                        JOptionPane.ERROR_MESSAGE);
+                if (isValid) {
+                    JOptionPane.showMessageDialog(this, "Login Successful! Welcome, Admin.");
+                    
+                    StudentBranch studentBranch = new StudentBranch();
+                    studentBranch.setVisible(true);
+                    
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid Admin Username or Password.",
+                            "Login Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            
+            // ==========================================
+            // 2. USER (STUDENT) LOGIN
+            // ==========================================
+            else if (selectedRole.equals("User (Student)")) {
+                Student authenticatedStudent = userDAO.authenticateStudent(username, password);
+
+                if (authenticatedStudent != null) {
+                    JOptionPane.showMessageDialog(this, 
+                            "Login Successful! Welcome, " + authenticatedStudent.getName() + ".");
+                    
+                    // Open Student Dashboard passing the logged-in student's details
+                    UserDashboardGUI dashboard = new UserDashboardGUI(authenticatedStudent);
+                    dashboard.setVisible(true);
+                    
+                    this.dispose();
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Invalid Student ID or Password.\n(Note: Default password is '12345')",
+                            "Login Failed",
+                            JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
     }
-
-    
 }

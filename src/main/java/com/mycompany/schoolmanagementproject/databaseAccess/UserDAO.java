@@ -87,4 +87,22 @@ public class UserDAO {
         }
         return list;
     }
+    // Fetch course names enrolled by this student
+    public ArrayList<String> getStudentCourses(String studentId) {
+        ArrayList<String> courses = new ArrayList<>();
+        String sql = "SELECT course_name FROM enrollments WHERE student_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, studentId.trim());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    courses.add(rs.getString("course_name"));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("UserDAO Error [getStudentCourses]: " + e.getMessage());
+        }
+        return courses;
+    }
 }
