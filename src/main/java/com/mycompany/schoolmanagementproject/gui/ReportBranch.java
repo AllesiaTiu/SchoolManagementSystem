@@ -36,6 +36,7 @@ public class ReportBranch extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setLayout(null);
         
+        //For jbutton
         reportManager = new ReportManager();
         reportList = new ArrayList<>();
 
