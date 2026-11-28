@@ -14,8 +14,15 @@ public class TranscriptRecord {
         this.subjectTitle = subjectTitle;
         this.units = units;
         this.grade = grade;
-       
-        this.remarks = (grade >= 75.0 || (grade <= 3.0 && grade >= 1.0)) ? "Passed" : "Failed";
+        
+        // Smart Remarks:
+        if (grade <= 0.0) {
+            this.remarks = "In Progress";
+        } else if (grade >= 75.0 || (grade <= 3.0 && grade >= 1.0)) {
+            this.remarks = "Passed";
+        } else {
+            this.remarks = "Failed";
+        }
     }
 
     public int getNo() {

@@ -5,6 +5,7 @@ import com.mycompany.schoolmanagementproject.gui.StudentBranch;
 import com.mycompany.schoolmanagementproject.manager.GradesManager;
 import com.mycompany.schoolmanagementproject.manager.StudentManager;
 import com.mycompany.schoolmanagementproject.model.Grades;
+import com.mycompany.schoolmanagementproject.model.Student;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,7 +36,6 @@ public class GradesBranch extends JFrame implements ActionListener {
     JScrollPane scrollPane;
             
     public GradesBranch() {
-       
         setTitle("School Management System - Grades Branch");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -44,7 +44,6 @@ public class GradesBranch extends JFrame implements ActionListener {
         
         gradesList = new ArrayList<>();
 
-       
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -182,7 +181,34 @@ public class GradesBranch extends JFrame implements ActionListener {
         refreshTable();
     }
 
-  
+    private void loadDynamicCourses() {
+        courseCmb.removeAllItems();
+        ArrayList<String> coursesList = StudentManager.getAvailableCourses();
+        for (String c : coursesList) {
+            courseCmb.addItem(c);
+        }
+    }
+
+    public void refreshTable() {
+        tableModel.setRowCount(0);
+        gradesList = gradesManager.getAllGrades();
+        for (Grades g : gradesList) {
+            tableModel.addRow(new Object[]{g.getStudentId(), g.getCourseId(), g.getScore()});
+        }
+    }
+
+    public int binarySearchGrades(ArrayList<Grades> list, String targetId) {
+        int low = 0;
+        int high = list.size() - 1;
+        while (low <= high) {
+            int mid = low + (high - low) / 2;
+            int cmp = list.get(mid).getStudentId().compareToIgnoreCase(targetId);
+            if (cmp == 0) return mid;
+            if (cmp < 0) low = mid + 1;
+            else high = mid - 1;
+        }
+        return -1;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -202,7 +228,6 @@ public class GradesBranch extends JFrame implements ActionListener {
             new TranscriptBranch().setVisible(true);
             this.dispose();
         }
-
 
         if (e.getSource() == searchBtn) {
             String query = searchTxt.getText().trim();
@@ -237,11 +262,34 @@ public class GradesBranch extends JFrame implements ActionListener {
                 return;
             }
 
-            double scoreVal = Double.parseDouble(scoreStr);
+            // Student ID validation
+            boolean studentExists = false;
+            for (Student s : StudentManager.getAllStudents()) {
+                if (s.getID().equalsIgnoreCase(id)) {
+                    studentExists = true;
+                    break;
+                }
+            }
+            if (!studentExists) {
+                JOptionPane.showMessageDialog(this, "Student ID '" + id + "' does not exist in the database!\nPlease check the ID in the Students branch.");
+                return;
+            }
+
+            double scoreVal;
+            try {
+                scoreVal = Double.parseDouble(scoreStr);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Score must be a valid number.");
+                return;
+            }
+
             Grades newGrade = new Grades(id, course, scoreVal);
             if (gradesManager.addGrade(newGrade)) {
+                // Auto-calculate GWA immediately in MySQL
+                gradesManager.calculateGWA(id);
                 refreshTable();
-                JOptionPane.showMessageDialog(this, "Grade saved successfully!");
+                scoreInput.setText("");
+                JOptionPane.showMessageDialog(this, "Grade saved & GWA automatically updated!");
             }
         }
 
@@ -251,11 +299,18 @@ public class GradesBranch extends JFrame implements ActionListener {
 
             String id = idInput.getText().trim();
             String course = courseCmb.getSelectedItem().toString();
-            double newScore = Double.parseDouble(scoreInput.getText().trim());
+            double newScore;
+            try {
+                newScore = Double.parseDouble(scoreInput.getText().trim());
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Score must be a valid number.");
+                return;
+            }
 
             if (gradesManager.updateGrade(id, course, newScore)) {
+                gradesManager.calculateGWA(id);
                 refreshTable();
-                JOptionPane.showMessageDialog(this, "Grade updated successfully!");
+                JOptionPane.showMessageDialog(this, "Grade updated & GWA automatically updated!");
             }
         }
 
@@ -266,6 +321,7 @@ public class GradesBranch extends JFrame implements ActionListener {
                 String courseName = tableModel.getValueAt(selectedRow, 1).toString();
 
                 if (gradesManager.deleteGrade(studentId, courseName)) {
+                    gradesManager.calculateGWA(studentId);
                     refreshTable();
                     JOptionPane.showMessageDialog(this, "Grade deleted successfully!");
                 }
@@ -281,34 +337,5 @@ public class GradesBranch extends JFrame implements ActionListener {
                 JOptionPane.showMessageDialog(this, "Student: " + id + "\nCalculated GWA: " + String.format("%.2f", gwa) + "\n(Updated in Database!)");
             }
         }
-    }
-      private void loadDynamicCourses() {
-        courseCmb.removeAllItems();
-        ArrayList<String> coursesList = StudentManager.getAvailableCourses();
-        for (String c : coursesList) {
-            courseCmb.addItem(c);
-        }
-    }
-
-    public void refreshTable() {
-        tableModel.setRowCount(0);
-        gradesList = gradesManager.getAllGrades();
-        for (Grades g : gradesList) {
-            tableModel.addRow(new Object[]{g.getStudentId(), g.getCourseId(), g.getScore()});
-        }
-    }
-
-  
-    public int binarySearchGrades(ArrayList<Grades> list, String targetId) {
-        int low = 0;
-        int high = list.size() - 1;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-            int cmp = list.get(mid).getStudentId().compareToIgnoreCase(targetId);
-            if (cmp == 0) return mid;
-            if (cmp < 0) low = mid + 1;
-            else high = mid - 1;
-        }
-        return -1;
     }
 }

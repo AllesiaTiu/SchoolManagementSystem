@@ -58,14 +58,22 @@ public class StudentBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
         
+        // --- RESTORED STUDENT ID (PREVENTS CRASH) ---
+        studentId = new JLabel("Student ID: ");
+        studentId.setBounds(30, 35, 100, 25);
+        
+        idInput = new JTextField();
+        idInput.setBounds(140, 35, 250, 20);
+        idInput.setEditable(false);
+        
         studentName = new JLabel("Name:");
-        studentName.setBounds(30, 60, 100, 30);
+        studentName.setBounds(30, 65, 100, 25);
         
         nameInput = new JTextField();
         nameInput.setBounds(140, 65, 250, 20);
         
         studentCourse = new JLabel("Courses: ");
-        studentCourse.setBounds(30, 90, 100, 30);
+        studentCourse.setBounds(30, 95, 100, 30);
        
         title = new JLabel("Student Management");
         title.setBounds(30, 0, 150, 30);
@@ -110,6 +118,8 @@ public class StudentBranch extends JFrame implements ActionListener {
         panelInputs.setBounds(180, 30, 600, 300);
         panelInputs.setLayout(null);
         panelInputs.add(panelTitle);
+        panelInputs.add(studentId);
+        panelInputs.add(idInput);
         panelInputs.add(studentName);
         panelInputs.add(nameInput);
         panelInputs.add(studentCourse);
@@ -182,8 +192,8 @@ public class StudentBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        String nameText = nameInput.getText().trim();
-        String idText = idInput.getText().trim();
+        String nameText = (nameInput != null) ? nameInput.getText().trim() : "";
+        String idText = (idInput != null) ? idInput.getText().trim() : "";
         
         if (e.getSource() == addBtn) {
             if (nameText.isEmpty()) {
@@ -264,7 +274,6 @@ public class StudentBranch extends JFrame implements ActionListener {
             refreshTable();
         }
         
-     
         if (e.getSource() == searchBtn) {
             String query = searchInput.getText().trim();
             if (query.isEmpty()) {
@@ -274,12 +283,10 @@ public class StudentBranch extends JFrame implements ActionListener {
 
             bubbleSort(studentList);
 
-    
             int foundIndex = binarySearchByName(studentList, query);
             if (foundIndex == -1) {
                 foundIndex = binarySearchById(studentList, query);
             }
-
 
             if (foundIndex != -1) {
                 Student s = studentList.get(foundIndex);
@@ -315,7 +322,6 @@ public class StudentBranch extends JFrame implements ActionListener {
         }
     }
 
-  
     public int binarySearchByName(ArrayList<Student> list, String target) {
         int low = 0;
         int high = list.size() - 1;

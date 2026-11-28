@@ -20,7 +20,7 @@ import javax.swing.table.DefaultTableModel;
 public class TranscriptBranch extends JFrame implements ActionListener {
 
     private TranscriptManager transcriptManager;
-    private ArrayList<Student> studentList; // Explicit ArrayList
+    private ArrayList<Student> studentList;
     private ArrayList<TranscriptRecord> currentRecords;
 
     JButton students, courses, grades, transcript, report, attendance;
@@ -36,7 +36,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
     JScrollPane scrollPane;
 
     public TranscriptBranch() {
-       
         setTitle("School Management System - Transcript");
         setSize(1000, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -71,7 +70,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
 
-       
         JLabel title = new JLabel("Official Student Transcript");
         title.setBounds(20, 0, 250, 30);
 
@@ -100,7 +98,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         btnRefresh.addActionListener(this);
         add(btnRefresh);
 
-     
         JPanel cardPanel = new JPanel();
         cardPanel.setBackground(Color.LIGHT_GRAY);
         cardPanel.setBounds(180, 105, 580, 110);
@@ -140,7 +137,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
         add(cardPanel);
 
-
         JPanel gwaPanel = new JPanel();
         gwaPanel.setBackground(Color.WHITE);
         gwaPanel.setBounds(770, 105, 190, 110);
@@ -169,7 +165,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
         add(gwaPanel);
 
-
         String[] columns = {"No.", "Subject Code", "Subject Title", "Units", "Grade", "Remarks"};
         tableModel = new DefaultTableModel(columns, 0);
 
@@ -189,7 +184,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
         btnPrint.addActionListener(this);
         add(btnPrint);
 
-       
         students.addActionListener(this);
         courses.addActionListener(this);
         grades.addActionListener(this);
@@ -200,7 +194,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-      
         if (e.getSource() == students) {
             new StudentBranch().setVisible(true);
             this.dispose();
@@ -218,7 +211,7 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
-      
+        // --- BINARY SEARCH BY STUDENT ID ---
         if (e.getSource() == btnSearch) {
             String targetId = txtSearch.getText().trim();
             if (targetId.isEmpty()) {
@@ -226,38 +219,34 @@ public class TranscriptBranch extends JFrame implements ActionListener {
                 return;
             }
 
-
             studentList = StudentManager.getAllStudents();
             if (studentList.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "No students exist in database.");
                 return;
             }
 
-
             transcriptManager.sortStudentsById(studentList);
-
-      
             int foundIdx = transcriptManager.binarySearchStudentById(studentList, targetId);
 
             if (foundIdx != -1) {
                 Student s = studentList.get(foundIdx);
 
-           
                 lblIdValue.setText(s.getID());
                 lblNameValue.setText(s.getName());
                 lblGwaVal.setText((s.getGwa() > 0.0) ? String.format("%.2f", s.getGwa()) : "N/A");
                 lblEqVal.setText(transcriptManager.getEquivalent(s.getGwa()));
 
-            
                 tableModel.setRowCount(0);
                 currentRecords = transcriptManager.getStudentTranscript(s.getID());
+                
                 for (TranscriptRecord r : currentRecords) {
+                    String gradeText = (r.getGrade() > 0.0) ? String.format("%.2f", r.getGrade()) : "Pending";
                     tableModel.addRow(new Object[]{
                         r.getNo(),
                         r.getSubjectCode(),
                         r.getSubjectTitle(),
                         r.getUnits(),
-                        String.format("%.2f", r.getGrade()),
+                        gradeText,
                         r.getRemarks()
                     });
                 }
@@ -268,7 +257,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             }
         }
 
-      
         if (e.getSource() == btnRefresh) {
             txtSearch.setText("");
             lblIdValue.setText("-");
@@ -279,7 +267,6 @@ public class TranscriptBranch extends JFrame implements ActionListener {
             tableModel.setRowCount(0);
         }
 
-      
         if (e.getSource() == btnPrint) {
             if (tableModel.getRowCount() == 0) {
                 JOptionPane.showMessageDialog(this, "No transcript record loaded to print.");

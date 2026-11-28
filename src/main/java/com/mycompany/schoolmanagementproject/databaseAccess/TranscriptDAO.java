@@ -1,6 +1,5 @@
 package com.mycompany.schoolmanagementproject.databaseAccess;
 
-import com.mycompany.schoolmanagementproject.databaseAccess.DBConnection;
 import com.mycompany.schoolmanagementproject.model.TranscriptRecord;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,14 +9,18 @@ import java.util.ArrayList;
 
 public class TranscriptDAO {
 
-
     public ArrayList<TranscriptRecord> getTranscriptByStudentId(String studentId) {
         ArrayList<TranscriptRecord> list = new ArrayList<>();
         
-        String sql = "SELECT c.course_id, g.course_name, g.score "
-                   + "FROM grades g "
-                   + "LEFT JOIN courses c ON LOWER(TRIM(c.course_name)) = LOWER(TRIM(g.course_name)) "
-                   + "WHERE g.student_id = ?";
+        // Pulls all enrolled subjects first, and pulls grades/scores if already graded
+        String sql = "SELECT "
+                   + "    IFNULL(c.course_id, 'IT101') AS course_id, "
+                   + "    e.course_name, "
+                   + "    IFNULL(g.score, 0.0) AS score "
+                   + "FROM enrollments e "
+                   + "LEFT JOIN courses c ON LOWER(TRIM(c.course_name)) = LOWER(TRIM(e.course_name)) "
+                   + "LEFT JOIN grades g ON g.student_id = e.student_id AND LOWER(TRIM(g.course_name)) = LOWER(TRIM(e.course_name)) "
+                   + "WHERE e.student_id = ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -29,7 +32,7 @@ public class TranscriptDAO {
                 while (rs.next()) {
                     String code = rs.getString("course_id");
                     if (code == null || code.trim().isEmpty()) {
-                        code = "IT" + (100 + count); 
+                        code = "CS" + (100 + count);
                     }
                     String title = rs.getString("course_name");
                     double score = rs.getDouble("score");
