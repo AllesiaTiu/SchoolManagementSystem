@@ -1,7 +1,5 @@
 package com.mycompany.schoolmanagementproject.gui;
 
-import com.mycompany.schoolmanagementproject.gui.CourseBranch;
-import com.mycompany.schoolmanagementproject.gui.StudentBranch;
 import com.mycompany.schoolmanagementproject.manager.GradesManager;
 import com.mycompany.schoolmanagementproject.manager.StudentManager;
 import com.mycompany.schoolmanagementproject.model.Grades;
@@ -17,18 +15,23 @@ import javax.swing.table.DefaultTableModel;
 
 public class GradesBranch extends JFrame implements ActionListener {
     
-    GradesManager gradesManager = new GradesManager();
-    ArrayList<Grades> gradesList;
+    private GradesManager gradesManager = new GradesManager();
+    private ArrayList<Grades> gradesList;
+    private ArrayList<Student> allStudents;
 
+    // Navigation Buttons
     JButton students, courses, grades, transcript, report, attendance;
     JButton addBtn, updBtn, deleteBtn, computeAve;
     
     JTextField searchTxt;
     JButton searchBtn;
     
-    JLabel title, studentId, courseId, score, gradesListTitle;
-    JTextField idInput, scoreInput;
-    JComboBox<String> courseCmb;
+    JLabel title, studentLbl, courseLbl, scoreLbl, gradesListTitle;
+    
+    // SMART DROPDOWNS
+    JComboBox<String> studentCmb; // Shows "ID - Name"
+    JComboBox<String> courseCmb;  // Shows ONLY that student's enrolled courses!
+    JTextField scoreInput;
     
     JPanel panelInputs, panelTitle, listTitle;
     DefaultTableModel tableModel;
@@ -43,7 +46,9 @@ public class GradesBranch extends JFrame implements ActionListener {
         setLayout(null);
         
         gradesList = new ArrayList<>();
+        allStudents = new ArrayList<>();
 
+        // --- 1. Sidebar Navigation ---
         students = new JButton("Students");
         students.setBounds(20, 30, 150, 50);
         add(students);
@@ -68,56 +73,58 @@ public class GradesBranch extends JFrame implements ActionListener {
         attendance.setBounds(20, 330, 150, 50);
         add(attendance);
         
-        title = new JLabel("Grades Management");
-        title.setBounds(30, 0, 150, 30);
-        
-        studentId = new JLabel("Student ID: ");
-        studentId.setBounds(30, 30, 100, 30);
-        
-        idInput = new JTextField();
-        idInput.setBounds(140, 35, 250, 20);
-        
-        courseId = new JLabel("Course Name:");
-        courseId.setBounds(30, 60, 100, 30);
-        
-        courseCmb = new JComboBox<>();
-        loadDynamicCourses();
-        courseCmb.setBounds(140, 70, 250, 20);
-        
-        score = new JLabel("Score:");
-        score.setBounds(30, 90, 100, 30);
-        
-        scoreInput = new JTextField();
-        scoreInput.setBounds(140, 100, 250, 20);
-        
-        addBtn = new JButton("Add");
-        addBtn.setBounds(50, 130, 100, 40);
-        
-        updBtn = new JButton("Update");
-        updBtn.setBounds(160, 130, 100, 40);
-        
-        deleteBtn = new JButton("Delete");
-        deleteBtn.setBounds(270, 130, 100, 40);
-        
-        computeAve = new JButton("Average");
-        computeAve.setBounds(380, 130, 100, 40);
-       
+        // --- 2. Input Panel ---
         panelTitle = new JPanel();
         panelTitle.setBackground(Color.PINK);
         panelTitle.setSize(600, 30);
         panelTitle.setLayout(null);
+        
+        title = new JLabel("Grades Management");
+        title.setBounds(30, 0, 150, 30);
         panelTitle.add(title);
         
+        studentLbl = new JLabel("Select Student:");
+        studentLbl.setBounds(30, 35, 110, 25);
+        
+        studentCmb = new JComboBox<>();
+        studentCmb.setBounds(140, 35, 280, 25);
+        studentCmb.addActionListener(this); // Listens for student selection!
+        
+        courseLbl = new JLabel("Enrolled Course:");
+        courseLbl.setBounds(30, 68, 110, 25);
+        
+        courseCmb = new JComboBox<>();
+        courseCmb.setBounds(140, 68, 280, 25);
+        courseCmb.addActionListener(this); // Listens for course selection to auto-fill score!
+        
+        scoreLbl = new JLabel("Score:");
+        scoreLbl.setBounds(30, 100, 100, 25);
+        
+        scoreInput = new JTextField();
+        scoreInput.setBounds(140, 100, 280, 22);
+        
+        addBtn = new JButton("Add");
+        addBtn.setBounds(50, 135, 100, 40);
+        
+        updBtn = new JButton("Update");
+        updBtn.setBounds(160, 135, 100, 40);
+        
+        deleteBtn = new JButton("Delete");
+        deleteBtn.setBounds(270, 135, 100, 40);
+        
+        computeAve = new JButton("Average");
+        computeAve.setBounds(380, 135, 100, 40);
+       
         panelInputs = new JPanel();
         panelInputs.setBackground(Color.LIGHT_GRAY);
         panelInputs.setBounds(180, 30, 600, 200);
         panelInputs.setLayout(null);
         panelInputs.add(panelTitle);
-        panelInputs.add(studentId);
-        panelInputs.add(courseId);
-        panelInputs.add(score);
-        panelInputs.add(idInput);
+        panelInputs.add(studentLbl);
+        panelInputs.add(studentCmb);
+        panelInputs.add(courseLbl);
         panelInputs.add(courseCmb);
+        panelInputs.add(scoreLbl);
         panelInputs.add(scoreInput);
         panelInputs.add(addBtn);
         panelInputs.add(updBtn);
@@ -125,6 +132,7 @@ public class GradesBranch extends JFrame implements ActionListener {
         panelInputs.add(computeAve);
         add(panelInputs);
         
+        // --- 3. Table Header & Search ---
         gradesListTitle = new JLabel("Grades List");
         gradesListTitle.setBounds(30, 0, 150, 30);
         
@@ -144,6 +152,7 @@ public class GradesBranch extends JFrame implements ActionListener {
         searchBtn.addActionListener(this);
         add(searchBtn);
         
+        // --- 4. Table ---
         tableModel = new DefaultTableModel();
         tableModel.addColumn("Student ID");
         tableModel.addColumn("Course Name");
@@ -154,6 +163,7 @@ public class GradesBranch extends JFrame implements ActionListener {
         scrollPane.setBounds(180, 280, 800, 350);
         add(scrollPane);
         
+        // Listeners
         grades.addActionListener(this);
         students.addActionListener(this);
         courses.addActionListener(this);
@@ -166,26 +176,94 @@ public class GradesBranch extends JFrame implements ActionListener {
         deleteBtn.addActionListener(this);
         computeAve.addActionListener(this);
         
+        // Clicking a row in the table automatically selects that student and course
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 int row = table.getSelectedRow();
                 if (row != -1) {
-                    idInput.setText(tableModel.getValueAt(row, 0).toString());
-                    courseCmb.setSelectedItem(tableModel.getValueAt(row, 1).toString());
-                    scoreInput.setText(tableModel.getValueAt(row, 2).toString());
+                    String selectedId = tableModel.getValueAt(row, 0).toString();
+                    String selectedCourse = tableModel.getValueAt(row, 1).toString();
+                    String score = tableModel.getValueAt(row, 2).toString();
+
+                    selectStudentInDropdown(selectedId);
+                    courseCmb.setSelectedItem(selectedCourse);
+                    scoreInput.setText(score);
                 }
             }
         });
 
+        // Initialize Student list and Table data
+        loadStudentDropdown();
         refreshTable();
     }
 
-    private void loadDynamicCourses() {
+    // Populate student dropdown from database
+    private void loadStudentDropdown() {
+        studentCmb.removeActionListener(this); // Temporarily pause listener while loading
+        studentCmb.removeAllItems();
+        studentCmb.addItem("-- Select Student --");
+        
+        allStudents = StudentManager.getAllStudents();
+        for (Student s : allStudents) {
+            studentCmb.addItem(s.getID() + " - " + s.getName());
+        }
+        studentCmb.addActionListener(this);
+    }
+
+    // Extract student ID from the combo item "2026-XXXX-BN-0 - Name"
+    private String getSelectedStudentId() {
+        if (studentCmb.getSelectedIndex() <= 0) return null;
+        String item = studentCmb.getSelectedItem().toString();
+        return item.split(" - ")[0].trim();
+    }
+
+    // Automatically loads ONLY the courses the selected student enrolled in!
+    private void updateCoursesForSelectedStudent() {
+        courseCmb.removeActionListener(this);
         courseCmb.removeAllItems();
-        ArrayList<String> coursesList = StudentManager.getAvailableCourses();
-        for (String c : coursesList) {
-            courseCmb.addItem(c);
+        scoreInput.setText("");
+
+        String studentId = getSelectedStudentId();
+        if (studentId == null) {
+            courseCmb.addItem("-- Select a student first --");
+            courseCmb.addActionListener(this);
+            return;
+        }
+
+        ArrayList<String> enrolled = StudentManager.getEnrolledCourses(studentId);
+        if (enrolled.isEmpty()) {
+            courseCmb.addItem("-- No Enrolled Courses --");
+        } else {
+            for (String cName : enrolled) {
+                courseCmb.addItem(cName);
+            }
+            checkAndPreloadGrade();
+        }
+        courseCmb.addActionListener(this);
+    }
+
+    // Preloads existing score if grade is already recorded
+    private void checkAndPreloadGrade() {
+        String studentId = getSelectedStudentId();
+        if (studentId == null || courseCmb.getSelectedItem() == null) return;
+        String selectedCourse = courseCmb.getSelectedItem().toString();
+
+        for (Grades g : gradesManager.getAllGrades()) {
+            if (g.getStudentId().equalsIgnoreCase(studentId) && g.getCourseId().equalsIgnoreCase(selectedCourse)) {
+                scoreInput.setText(String.format("%.2f", g.getScore()));
+                return;
+            }
+        }
+        scoreInput.setText(""); // Blank if not graded yet
+    }
+
+    private void selectStudentInDropdown(String studentId) {
+        for (int i = 1; i < studentCmb.getItemCount(); i++) {
+            if (studentCmb.getItemAt(i).startsWith(studentId)) {
+                studentCmb.setSelectedIndex(i);
+                break;
+            }
         }
     }
 
@@ -212,6 +290,19 @@ public class GradesBranch extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        // --- AUTO-UPDATE COURSES WHEN STUDENT DROPDOWN CHANGES ---
+        if (e.getSource() == studentCmb) {
+            updateCoursesForSelectedStudent();
+            return;
+        }
+
+        // --- AUTO-FILL SCORE WHEN COURSE DROPDOWN CHANGES ---
+        if (e.getSource() == courseCmb) {
+            checkAndPreloadGrade();
+            return;
+        }
+
+        // --- NAVIGATION BUTTONS ---
         if (e.getSource() == courses) {
             new CourseBranch().setVisible(true);
             this.dispose();
@@ -229,6 +320,7 @@ public class GradesBranch extends JFrame implements ActionListener {
             this.dispose();
         }
 
+        // --- BINARY SEARCH ---
         if (e.getSource() == searchBtn) {
             String query = searchTxt.getText().trim();
             if (query.isEmpty()) {
@@ -244,34 +336,32 @@ public class GradesBranch extends JFrame implements ActionListener {
                 Grades match = gradesList.get(idx);
                 tableModel.setRowCount(0);
                 tableModel.addRow(new Object[]{match.getStudentId(), match.getCourseId(), match.getScore()});
-                JOptionPane.showMessageDialog(this, "Grade found via Binary Search at sorted index [" + idx + "]!");
+                selectStudentInDropdown(match.getStudentId());
+                JOptionPane.showMessageDialog(this, "Grade found via Binary Search!");
             } else {
                 JOptionPane.showMessageDialog(this, "No grades found for Student ID: " + query);
                 refreshTable();
             }
         }
 
+        // --- ADD BUTTON ---
         if (e.getSource() == addBtn) {
-            String id = idInput.getText().trim();
-            if (courseCmb.getSelectedItem() == null) return;
-            String course = courseCmb.getSelectedItem().toString();
-            String scoreStr = scoreInput.getText().trim();
-
-            if (id.isEmpty() || scoreStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter both Student ID and Score.");
+            String id = getSelectedStudentId();
+            if (id == null) {
+                JOptionPane.showMessageDialog(this, "Please select a student from the dropdown.");
                 return;
             }
 
-            // Student ID validation
-            boolean studentExists = false;
-            for (Student s : StudentManager.getAllStudents()) {
-                if (s.getID().equalsIgnoreCase(id)) {
-                    studentExists = true;
-                    break;
-                }
+            if (courseCmb.getSelectedItem() == null || courseCmb.getSelectedItem().toString().startsWith("--")) {
+                JOptionPane.showMessageDialog(this, "This student has no enrolled subjects to grade.");
+                return;
             }
-            if (!studentExists) {
-                JOptionPane.showMessageDialog(this, "Student ID '" + id + "' does not exist in the database!\nPlease check the ID in the Students branch.");
+
+            String course = courseCmb.getSelectedItem().toString();
+            String scoreStr = scoreInput.getText().trim();
+
+            if (scoreStr.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Please enter a valid score.");
                 return;
             }
 
@@ -285,19 +375,20 @@ public class GradesBranch extends JFrame implements ActionListener {
 
             Grades newGrade = new Grades(id, course, scoreVal);
             if (gradesManager.addGrade(newGrade)) {
-                // Auto-calculate GWA immediately in MySQL
-                gradesManager.calculateGWA(id);
+                gradesManager.calculateGWA(id); // Auto-updates GWA in MySQL
                 refreshTable();
-                scoreInput.setText("");
                 JOptionPane.showMessageDialog(this, "Grade saved & GWA automatically updated!");
             }
         }
 
+        // --- UPDATE BUTTON ---
         if (e.getSource() == updBtn) {
-            int selectedRow = table.getSelectedRow();
-            if (selectedRow == -1) return;
+            String id = getSelectedStudentId();
+            if (id == null || courseCmb.getSelectedItem() == null) {
+                JOptionPane.showMessageDialog(this, "Select a student and course to update.");
+                return;
+            }
 
-            String id = idInput.getText().trim();
             String course = courseCmb.getSelectedItem().toString();
             double newScore;
             try {
@@ -310,10 +401,11 @@ public class GradesBranch extends JFrame implements ActionListener {
             if (gradesManager.updateGrade(id, course, newScore)) {
                 gradesManager.calculateGWA(id);
                 refreshTable();
-                JOptionPane.showMessageDialog(this, "Grade updated & GWA automatically updated!");
+                JOptionPane.showMessageDialog(this, "Grade updated & GWA automatically recalculated!");
             }
         }
 
+        // --- DELETE BUTTON ---
         if (e.getSource() == deleteBtn) {
             int selectedRow = table.getSelectedRow();
             if (selectedRow != -1) {
@@ -323,18 +415,27 @@ public class GradesBranch extends JFrame implements ActionListener {
                 if (gradesManager.deleteGrade(studentId, courseName)) {
                     gradesManager.calculateGWA(studentId);
                     refreshTable();
+                    scoreInput.setText("");
                     JOptionPane.showMessageDialog(this, "Grade deleted successfully!");
                 }
+            } else {
+                JOptionPane.showMessageDialog(this, "Please click a row in the table to delete.");
             }
         }
 
+        // --- COMPUTE AVERAGE BUTTON ---
         if (e.getSource() == computeAve) {
-            String id = idInput.getText().trim();
-            if (id.isEmpty()) return;
+            String id = getSelectedStudentId();
+            if (id == null) {
+                JOptionPane.showMessageDialog(this, "Please select a student first.");
+                return;
+            }
 
             double gwa = gradesManager.calculateGWA(id);
             if (gwa > 0) {
-                JOptionPane.showMessageDialog(this, "Student: " + id + "\nCalculated GWA: " + String.format("%.2f", gwa) + "\n(Updated in Database!)");
+                JOptionPane.showMessageDialog(this, "Student ID: " + id + "\nCalculated GWA: " + String.format("%.2f", gwa) + "\n(Updated in MySQL database!)");
+            } else {
+                JOptionPane.showMessageDialog(this, "No grades found for this student.");
             }
         }
     }

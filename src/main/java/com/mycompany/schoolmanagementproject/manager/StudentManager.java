@@ -32,4 +32,7 @@ public class StudentManager {
     public static ArrayList<String> getAvailableCourses() {
         return studentDAO.selectAvailableCourses();
     }
+    public static ArrayList<String> getEnrolledCourses(String studentId) {
+        return studentDAO.selectCoursesByStudentId(studentId);
+    }
 }
